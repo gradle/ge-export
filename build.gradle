@@ -31,8 +31,9 @@ repositories {
 }
 
 dependencies {
-    // This dependency is found on compile classpath of this component and consumers.
-    compile 'com.google.guava:guava:20.0'
+    compile 'io.reactivex:rxnetty-http:0.5.2-rc.5'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.2'
+    compile 'io.reactivex:rxjava-math:1.0.0'
 
     // Use TestNG framework, also requires calling test.useTestNG() below
     testCompile 'org.testng:testng:6.10'
@@ -41,6 +42,11 @@ dependencies {
 
 // Define the main class for the application
 mainClassName = 'com.gradle.apiexport.MainKt'
+
+run {
+    /* Pass all the properties: */
+    systemProperties System.getProperties()
+}
 
 // Use TestNG for unit tests
 test.useTestNG()
