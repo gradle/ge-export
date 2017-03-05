@@ -9,6 +9,7 @@ Table 1 - Builds
     user
     project
     tasksId (foreign key into tasks table)
+    console log (lower priority)
 
 Table 2 - Task Executions
     (Deep dive into a single build page)
@@ -18,7 +19,6 @@ Table 2 - Task Executions
     startTime
     endTime
     duration
-    log (working under assumption that any log messages between startevent and stopevent are from that task)
     status (pass/fail)
 
 Note ----
