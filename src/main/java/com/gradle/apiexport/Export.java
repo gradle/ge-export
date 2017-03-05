@@ -34,7 +34,7 @@ public final class Export {
 
 
     public static void main(String[] args) throws Exception {
-        Instant since1Day = now().minus(Duration.ofHours(24));
+        Instant since1Day = now().minus(Duration.ofHours(128));
 
         buildIdStream(since1Day)
                 .flatMap(buildId -> buildEventStream(buildId)

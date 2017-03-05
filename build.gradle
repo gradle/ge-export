@@ -7,19 +7,7 @@
  */
 
 // Apply the java plugin to add support for Java
-apply plugin: 'kotlin'
-
-buildscript {
-    ext.kotlin_version = '1.0.6'
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
-// Apply the application plugin to add support for building an application
+apply plugin: 'java'
 apply plugin: 'application'
 
 // In this section you declare where to find the dependencies of your project
@@ -34,7 +22,6 @@ dependencies {
     compile 'io.reactivex:rxnetty-http:0.5.2-rc.5'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.2'
     compile 'io.reactivex:rxjava-math:1.0.0'
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile group: 'com.opencsv', name: 'opencsv', version: '3.9'
 
     // Use TestNG framework, also requires calling test.useTestNG() below
@@ -51,7 +38,7 @@ run {
 
 // Use TestNG for unit tests
 test.useTestNG()
-sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
-}
+//sourceSets {
+//    main.java.srcDirs += 'src/main/java'
+//}
 
