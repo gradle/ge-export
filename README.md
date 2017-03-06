@@ -4,9 +4,11 @@ The goal of this project is to create an simple ETL process for the Gradle Enter
 
 # Motivation
 
-Gradle Enterprise Export API (https://docs.gradle.com/enterprise/export-api) is a streaming API and can be imported into any appropriate datastore for ad-hoc analysis. This project will provide a simple ETL script to import data into a 'denormalized' DBMS for easy querying via standard SQL.
+Gradle Enterprise Export API (https://docs.gradle.com/enterprise/export-api) is a streaming API and can be imported into any appropriate datastore for ad-hoc analysis. This project will provide a simple ETL script to import data into a 'denormalized' RDBMS for easy querying via standard SQL.
 
-Examples:
+Additionally RDBMS data can be easily imported into most analytics tools such as Tableau.
+
+## Example Queries
 
 select avg(build_duration) from builds;
 
