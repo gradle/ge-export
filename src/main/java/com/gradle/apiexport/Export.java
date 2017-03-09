@@ -24,17 +24,15 @@ import static java.time.Instant.now;
 
 public final class Export {
 
-    private static final SocketAddress GRADLE_ENTERPRISE_SERVER = new InetSocketAddress("ubuntu16", 443);
+    private static final SocketAddress GRADLE_ENTERPRISE_SERVER = new InetSocketAddress("e.grdev.net", 443);
 
     private static final HttpClient<ByteBuf, ByteBuf> HTTP_CLIENT = HttpClient.newClient(GRADLE_ENTERPRISE_SERVER).unsafeSecure();
     private static final int THROTTLE = 5;
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    // A Histogram covering the range from 1 nsec to 1 hour with 3 decimal point resolution:
-
 
     public static void main(String[] args) throws Exception {
-        Instant since1Day = now().minus(Duration.ofHours(1000));
+        Instant since1Day = now().minus(Duration.ofHours(12));
 
         buildIdStream(since1Day)
                 .flatMap(buildId -> buildEventStream(buildId)

@@ -1,8 +1,15 @@
-apply plugin: 'java'
-apply plugin: 'application'
+plugins {
+    id 'com.gradle.build-scan' version '1.6'
+    id 'java'
+    id 'application'
+}
 
 repositories {
     mavenCentral()
+}
+
+buildScan {
+    publishAlways()
 }
 
 dependencies {
@@ -10,6 +17,9 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.2'
     compile 'io.reactivex:rxjava-math:1.0.0'
     compile group: 'com.opencsv', name: 'opencsv', version: '3.9'
+    compile 'com.xeiam:yank:3.0.2'
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.0.0'
+
 
     // Use TestNG framework, also requires calling test.useTestNG() below
     testCompile 'org.testng:testng:6.10'
