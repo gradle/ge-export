@@ -1,7 +1,17 @@
 package com.gradle.apiexport;
 
 class Task {
+    private String id;
     private String buildId;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     private String path;
 
     public void setBuildId(String buildId) {
@@ -38,6 +48,7 @@ class Task {
     @Override
     public String toString() {
         return "Task{" +
+                "id=" + id +
                 "buildId=" + buildId +
                 ", path='" + path +
                 ", durationInSec=" + durationInSec() +

@@ -61,17 +61,18 @@ data: {"timestamp":1488495221555,"type":{"majorVersion":1,"minorVersion":2,"even
         JsonNode data = json.get("data");
         JsonNode id = data.get("id");
         assert id != null;
-        String key = id.asText();
+        String taskId = id.asText();
 
-        assert taskMap.get(key) == null;
+        assert taskMap.get(taskId) == null;
 
         Task task = new Task();
+        task.setId(taskId);
         task.setBuildId(this.buidlId);
         task.setPath(data.get("path").asText());
         Timer timer = task.getTimer();
         timer.setStartTime( Instant.ofEpochMilli(json.get("timestamp").asLong()));
 
-        taskMap.put(key, task);
+        taskMap.put(taskId, task);
     }
 
     /*Example:

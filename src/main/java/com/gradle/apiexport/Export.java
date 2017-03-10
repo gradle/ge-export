@@ -27,7 +27,8 @@ import static java.time.Instant.now;
 
 public final class Export {
 
-    private static final SocketAddress GRADLE_ENTERPRISE_SERVER = new InetSocketAddress("ubuntu16", 443);
+    private static final SocketAddress GRADLE_ENTERPRISE_SERVER = new InetSocketAddress(
+            System.getProperty("server", "ubuntu16"), Integer.parseInt( System.getProperty("port","443")) );
 
     private static final HttpClient<ByteBuf, ByteBuf> HTTP_CLIENT = HttpClient.newClient(GRADLE_ENTERPRISE_SERVER).unsafeSecure();
     private static final int THROTTLE = 5;
@@ -39,9 +40,21 @@ public final class Export {
         Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
         Yank.setupDefaultConnectionPool(dbProps);
 
-        Instant since1Day = now().minus(Duration.ofHours(12));
+        String hoursStr = System.getProperty("hours");
 
-        buildIdStream(since1Day)
+        Instant since;
+        // default to 24hs
+        if(hoursStr == null) {
+            since = now().minus(Duration.ofHours( Integer.parseInt("24")));
+        }
+        else if(hoursStr.equals("all")) {
+            since = Instant.EPOCH;
+            System.out.println("Calculating for all stored build scans");
+        } else {
+            since = now().minus(Duration.ofHours( Integer.parseInt(hoursStr)));
+        }
+
+        buildIdStream(since)
                 .flatMap(buildId -> buildEventStream(buildId)
                                 .reduce(new EventProcessor(buildId), (eventProcessor, json) -> {
                                     eventProcessor.process(json);

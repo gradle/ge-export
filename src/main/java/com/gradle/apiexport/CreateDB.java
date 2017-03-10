@@ -3,7 +3,7 @@ package com.gradle.apiexport;
 import java.util.Properties;
 import org.knowm.yank.*;
 
-public class DatabaseOps {
+public class CreateDB {
     public static void main(String[] args) {
 
         Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
@@ -26,12 +26,6 @@ public class DatabaseOps {
         Yank.executeSQLKey("DROP_TASKS", null);
         Yank.executeSQLKey("CREATE_TASKS", null);
 
-        Task task = new Task();
-        task.setBuildId("100");
-        task.setPath(":checkstyle");
-
-        long id = TasksDAO.insertTask(task);
-        System.out.println("Created rec id: " + id);
 
         Yank.releaseDefaultConnectionPool();
 
