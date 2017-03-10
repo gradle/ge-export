@@ -7,6 +7,8 @@ import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientRequest;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import io.reactivex.netty.protocol.http.sse.ServerSentEvent;
+import org.knowm.yank.PropertiesUtils;
+import org.knowm.yank.Yank;
 import rx.Observable;
 import rx.exceptions.Exceptions;
 
@@ -15,6 +17,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.time.Instant.now;
@@ -24,7 +27,7 @@ import static java.time.Instant.now;
 
 public final class Export {
 
-    private static final SocketAddress GRADLE_ENTERPRISE_SERVER = new InetSocketAddress("e.grdev.net", 443);
+    private static final SocketAddress GRADLE_ENTERPRISE_SERVER = new InetSocketAddress("ubuntu16", 443);
 
     private static final HttpClient<ByteBuf, ByteBuf> HTTP_CLIENT = HttpClient.newClient(GRADLE_ENTERPRISE_SERVER).unsafeSecure();
     private static final int THROTTLE = 5;
@@ -32,6 +35,10 @@ public final class Export {
 
 
     public static void main(String[] args) throws Exception {
+
+        Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
+        Yank.setupDefaultConnectionPool(dbProps);
+
         Instant since1Day = now().minus(Duration.ofHours(12));
 
         buildIdStream(since1Day)
@@ -47,6 +54,8 @@ public final class Export {
                 .subscribe(
                         System.out::println
                 );
+
+        Yank.releaseDefaultConnectionPool();
     }
 
     private static Observable<String> buildIdStream(Instant since) {

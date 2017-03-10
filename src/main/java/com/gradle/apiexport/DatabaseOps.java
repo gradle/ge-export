@@ -1,33 +1,44 @@
 package com.gradle.apiexport;
 
 import java.util.Properties;
-import com.xeiam.yank.*;
+import org.knowm.yank.*;
 
 public class DatabaseOps {
     public static void main(String[] args) {
 
         Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
-        dbProps.setProperty("jdbcUrl", "jdbc:postgresql://localhost:5432/postgres");
-        dbProps.setProperty("username", "dvydra");
-        dbProps.setProperty("password", "");
-        dbProps.setProperty("maximumPoolSize", "5");
+
 
         // SQL Statements in Properties file
        // Properties sqlProps = PropertiesUtils.getPropertiesFromClasspath("MYSQL_SQL.properties");
         Properties createTableProps = new Properties();
-        createTableProps.put("CREATE_TASKS","CREATE TABLE TASKS(\n" +
+        createTableProps.put("DROP_TASKS", "DROP TABLE tasks");
+        createTableProps.put("CREATE_TASKS","CREATE TABLE tasks(\n" +
                 "   id          bigserial PRIMARY KEY   NOT NULL,\n" +
-                "   build_id     bigint    NOT NULL,\n" +
+                "   build_id     text    NOT NULL,\n" +
                 "   path         text     NOT NULL\n" +
                 ");");
 
-        Yank.setupDataSource(dbProps);
+        Yank.setupDefaultConnectionPool(dbProps);
         Yank.addSQLStatements(createTableProps);
 
         // create table
+        Yank.executeSQLKey("DROP_TASKS", null);
         Yank.executeSQLKey("CREATE_TASKS", null);
 
-        Yank.releaseDataSource();
+        Task task = new Task();
+        task.setBuildId("100");
+        task.setPath(":checkstyle");
+
+        long id = TasksDAO.insertTask(task);
+        System.out.println("Created rec id: " + id);
+
+        Yank.releaseDefaultConnectionPool();
 
     }
 }
+
+/*
+pg_ctl -D /usr/local/var/postgres/data -l /usr/local/var/postgres/data/server.log start
+
+ */

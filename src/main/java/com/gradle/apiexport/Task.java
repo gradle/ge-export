@@ -1,9 +1,35 @@
 package com.gradle.apiexport;
 
 class Task {
-    String buildId;
-    String path;
-    Timer timer = new Timer();
+    private String buildId;
+    private String path;
+
+    public void setBuildId(String buildId) {
+        this.buildId = buildId;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setTimer(Timer timer) {
+        this.timer = timer;
+    }
+
+    public String getBuildId() {
+
+        return buildId;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public Timer getTimer() {
+        return timer;
+    }
+
+    private Timer timer = new Timer();
 
     double durationInSec() {
         return timer.durationInSec();

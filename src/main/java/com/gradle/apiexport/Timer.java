@@ -5,8 +5,25 @@ import java.time.Instant;
 
 
 class Timer {
-    Instant startTime;
-    Instant finishTime;
+
+    public Instant getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Instant startTime) {
+        this.startTime = startTime;
+    }
+
+    public Instant getFinishTime() {
+        return finishTime;
+    }
+
+    public void setFinishTime(Instant finishTime) {
+        this.finishTime = finishTime;
+    }
+
+    private Instant startTime;
+    private Instant finishTime;
 
     double durationInSec() {
         return Duration.between(startTime, finishTime).toMillis() / 1000;

@@ -6,7 +6,10 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.*;
+import java.util.Properties;
+
 import com.opencsv.*;
+import org.knowm.yank.PropertiesUtils;
 
 
 class EventProcessor {
@@ -28,6 +31,7 @@ class EventProcessor {
     public EventProcessor(String buildId) {
         this.buidlId = buildId;
         csvWriter = new CSVWriter(createFileWriter("tasks.csv"), '\t');
+
         /*
      // feed in your array (or convert your data to an array)
      String[] entries = "first#second#third".split("#");
@@ -62,9 +66,10 @@ data: {"timestamp":1488495221555,"type":{"majorVersion":1,"minorVersion":2,"even
         assert taskMap.get(key) == null;
 
         Task task = new Task();
-        task.buildId = this.buidlId;
-        task.path = data.get("path").asText();
-        task.timer.startTime = Instant.ofEpochMilli(json.get("timestamp").asLong());
+        task.setBuildId(this.buidlId);
+        task.setPath(data.get("path").asText());
+        Timer timer = task.getTimer();
+        timer.setStartTime( Instant.ofEpochMilli(json.get("timestamp").asLong()));
 
         taskMap.put(key, task);
     }
@@ -86,9 +91,12 @@ id: 39
 
         JsonNode timestamp = json.get("timestamp");
         assert timestamp != null;
-        task.timer.finishTime = Instant.ofEpochMilli(timestamp.asLong());
+        Timer timer = task.getTimer();
+        timer.setFinishTime( Instant.ofEpochMilli(timestamp.asLong()) );
         System.out.println("Task: " + task);
         // insert into DB
+        long newId = TasksDAO.insertTask(task);
+        System.out.println("Created rec id: " + newId);
         taskMap.remove(key);
     }
 }
