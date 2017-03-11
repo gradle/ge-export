@@ -1,15 +1,15 @@
 package com.gradle.apiexport;
 
 class Task {
-    private String id;
+    private String taskId;
     private String buildId;
 
-    public String getId() {
-        return id;
+    public String getTaskId() {
+        return taskId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     private String path;
@@ -22,9 +22,6 @@ class Task {
         this.path = path;
     }
 
-    public void setTimer(Timer timer) {
-        this.timer = timer;
-    }
 
     public String getBuildId() {
 
@@ -41,17 +38,17 @@ class Task {
 
     private Timer timer = new Timer();
 
-    double durationInSec() {
-        return timer.durationInSec();
+    long durationInMillis() {
+        return timer.durationInMillis();
     }
 
     @Override
     public String toString() {
         return "Task{" +
-                "id=" + id +
-                "buildId=" + buildId +
+                " taskId=" + taskId +
+                ", buildId=" + buildId +
                 ", path='" + path +
-                ", durationInSec=" + durationInSec() +
+                ", durationInMillis=" + durationInMillis() +
                 '}';
     }
 }

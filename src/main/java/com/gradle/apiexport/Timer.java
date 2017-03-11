@@ -26,8 +26,10 @@ class Timer {
     private Instant finishTime;
 
     double durationInSec() {
-        return Duration.between(startTime, finishTime).toMillis() / 1000;
+        return durationInMillis() / 1000;
     }
+
+    long durationInMillis() { return Duration.between(startTime, finishTime).toMillis(); }
 
     @Override
     public String toString() {

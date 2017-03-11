@@ -14,7 +14,7 @@ Table 1 - Builds
 Table 2 - Task Executions
     (Deep dive into a single build page)
     path
-    id
+    taskId
     buildId (foreign key into builds table)
     startTime
     endTime

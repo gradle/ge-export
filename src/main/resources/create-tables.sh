@@ -1,5 +1,5 @@
 CREATE TABLE tasks (
-   id          bigserial PRIMARY KEY   NOT NULL,
+   taskId          bigserial PRIMARY KEY   NOT NULL,
    build_id     bigint    NOT NULL,
    path         text     NOT NULL
 );

@@ -27,6 +27,8 @@ import static java.time.Instant.now;
 
 public final class Export {
 
+    private static String BASIC_AUTH = System.getProperty("basic_auth");
+
     private static final SocketAddress GRADLE_ENTERPRISE_SERVER = new InetSocketAddress(
             System.getProperty("server", "ubuntu16"), Integer.parseInt( System.getProperty("port","443")) );
 
@@ -53,6 +55,8 @@ public final class Export {
         } else {
             since = now().minus(Duration.ofHours( Integer.parseInt(hoursStr)));
         }
+
+
 
         buildIdStream(since)
                 .flatMap(buildId -> buildEventStream(buildId)
@@ -84,8 +88,10 @@ public final class Export {
 
         HttpClientRequest<ByteBuf, ByteBuf> request = HTTP_CLIENT
                 .createGet("/build-export/v1/builds/since/" + String.valueOf(since.toEpochMilli()))
-                .setKeepAlive(true)
-                .addHeader("Authorization", "Basic ZG90Y29tLWRldjpwNSZZS2pUNHY0TEthZmxOZTJ5Kk5LVTA4Tm4wQFg=");
+                .setKeepAlive(true);
+        if(BASIC_AUTH != null) {
+            request = request.addHeader("Authorization", "Basic " + BASIC_AUTH);
+        };
 
         if (lastEventId != null) {
             request.addHeader("Last-Event-ID", lastEventId);
@@ -110,8 +116,10 @@ public final class Export {
 
         HttpClientRequest<ByteBuf, ByteBuf> request = HTTP_CLIENT
                 .createGet("/build-export/v1/build/" + buildId + "/events")
-                .setKeepAlive(true)
-                .addHeader("Authorization", "Basic ZG90Y29tLWRldjpwNSZZS2pUNHY0TEthZmxOZTJ5Kk5LVTA4Tm4wQFg=");
+                .setKeepAlive(true);
+        if(BASIC_AUTH != null) {
+            request = request.addHeader("Authorization", "Basic " + BASIC_AUTH);
+        };
 
         if (lastEventId != null) {
             request.addHeader("Last-Event-ID", lastEventId);

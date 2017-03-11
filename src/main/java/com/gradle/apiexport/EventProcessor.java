@@ -6,10 +6,8 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.*;
-import java.util.Properties;
 
 import com.opencsv.*;
-import org.knowm.yank.PropertiesUtils;
 
 
 class EventProcessor {
@@ -66,7 +64,7 @@ data: {"timestamp":1488495221555,"type":{"majorVersion":1,"minorVersion":2,"even
         assert taskMap.get(taskId) == null;
 
         Task task = new Task();
-        task.setId(taskId);
+        task.setTaskId(taskId);
         task.setBuildId(this.buidlId);
         task.setPath(data.get("path").asText());
         Timer timer = task.getTimer();
@@ -85,10 +83,12 @@ id: 39
     void taskFinished(JsonNode json) {
         JsonNode id = json.get("data").get("id");
         assert id != null;
-        String key = id.asText();
+        String taskId = id.asText();
 
-        Task task = taskMap.get(key);
-        assert task != null;
+        Task task = taskMap.get(taskId);
+        if(task == null) {
+            throw new RuntimeException("Could not find task with id: " + taskId + " in the task map");
+        };
 
         JsonNode timestamp = json.get("timestamp");
         assert timestamp != null;
@@ -98,6 +98,6 @@ id: 39
         // insert into DB
         long newId = TasksDAO.insertTask(task);
         System.out.println("Created rec id: " + newId);
-        taskMap.remove(key);
+        taskMap.remove(taskId);
     }
 }

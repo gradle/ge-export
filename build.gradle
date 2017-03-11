@@ -19,7 +19,7 @@ dependencies {
     compile group: 'com.opencsv', name: 'opencsv', version: '3.9'
     compile group: 'org.knowm', name: 'yank', version: '3.3.0'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.0.0'
-    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.24'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.24'
 
 
     // Use TestNG framework, also requires calling test.useTestNG() below
