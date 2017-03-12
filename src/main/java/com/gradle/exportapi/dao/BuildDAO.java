@@ -5,15 +5,22 @@ import static com.gradle.exportapi.dbutil.SQLHelper.*;
 import com.gradle.exportapi.Build;
 import org.knowm.yank.*;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+
 public class BuildDAO {
 
     public static long insertBuild(Build build) {
 
+        OffsetDateTime start = OffsetDateTime.ofInstant
+                (build.getTimer().getStartTime(), ZoneId.of(build.getTimeZoneId()));
+
         Object[] params = new Object[] {
-                build.getBuildId()
+                build.getBuildId(),
+                start
                 };
 
-        String SQL = insert("builds (build_id)", params);
+        String SQL = insert("builds (build_id, start)", params);
         return Yank.insert(SQL, params);
     }
 }

@@ -18,14 +18,6 @@ class EventProcessor {
     Map<String, Task> taskMap = new HashMap<>();
 
 
-    private Writer createFileWriter(String fileName) {
-        try {
-            return new FileWriter(fileName);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public EventProcessor(String buildId) {
         this.currentBuild = new Build( buildId );
     }
@@ -37,6 +29,13 @@ class EventProcessor {
             case "BuildStarted":
                 buildStarted(json);
                 break;
+            case "Locality":
+                locality(json);
+                break;
+            case "GradleLoaded":
+                gradleLoaded(json);
+                break;
+
             case "BuildFinished":
                 buildFinished(json);
                 break;
@@ -49,11 +48,21 @@ class EventProcessor {
         }
     }
 
-    private void buildStarted(JsonNode json) {
-        currentBuild.getTimer().setStartTime( Instant.ofEpochMilli( json.get("timestamp").asLong()) );
+    private void gradleLoaded(JsonNode json) {
         // insert into DB
         long newId = BuildDAO.insertBuild(currentBuild);
         System.out.println("Build id: " + newId);
+    }
+
+    private void locality(JsonNode json) {
+        currentBuild.setTimeZoneId( json.get("data").get("timeZoneId").asText() );
+
+        assert currentBuild.getTimeZoneId() != null;
+    }
+
+    private void buildStarted(JsonNode json) {
+        currentBuild.getTimer().setStartTime( Instant.ofEpochMilli( json.get("timestamp").asLong()) );
+
     }
 
     private void buildFinished(JsonNode json) {

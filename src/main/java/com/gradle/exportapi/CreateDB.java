@@ -23,7 +23,9 @@ public class CreateDB {
 
         createTableProps.put("CREATE_BUILDS","CREATE TABLE builds(\n" +
                 "   id                   bigserial PRIMARY KEY   NOT NULL,\n" +
-                "   build_id              text      NOT NULL,\n" +
+                "   build_id             text      NOT NULL,\n" +
+                "   start                timestamp with time zone,\n" +
+                "   finish               timestamp with time zone,\n" +
                 "   CONSTRAINT unigue_build_id UNIQUE(build_id)\n" +
                 ");");
 
