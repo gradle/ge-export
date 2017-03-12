@@ -29,4 +29,4 @@ select b.build_id, b.start from builds b, tasks t where b.build_id = t.build_id 
 To run this sample:
 
 1. Open a terminal window.
-2. Run `./gradlew run -Dserver=your_server_name -Dhours=24` from the command line.
+2. Run `./gradlew run -Dserver=your_server_name -Dhours=24 -DcreateDb` from the command line.
