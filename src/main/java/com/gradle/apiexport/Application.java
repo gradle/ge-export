@@ -39,7 +39,7 @@ public final class Application {
 
     public static void main(String[] args) throws Exception {
 
-        Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties.template");
+        Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
         Yank.setupDefaultConnectionPool(dbProps);
 
         if( System.getProperty("createDb") != null) {
