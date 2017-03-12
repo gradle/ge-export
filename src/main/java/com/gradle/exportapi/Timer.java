@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 
-class Timer {
+public class Timer {
 
     public Instant getStartTime() {
         return startTime;
@@ -25,11 +25,11 @@ class Timer {
     private Instant startTime;
     private Instant finishTime;
 
-    double durationInSec() {
+    public double durationInSec() {
         return durationInMillis() / 1000;
     }
 
-    long durationInMillis() { return Duration.between(startTime, finishTime).toMillis(); }
+    public long durationInMillis() { return Duration.between(startTime, finishTime).toMillis(); }
 
     @Override
     public String toString() {

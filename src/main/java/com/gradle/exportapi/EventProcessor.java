@@ -50,14 +50,14 @@ class EventProcessor {
     }
 
     private void buildStarted(JsonNode json) {
-        currentBuild.setStartTime( Instant.ofEpochMilli( json.get("timestamp").asLong()) );
+        currentBuild.getTimer().setStartTime( Instant.ofEpochMilli( json.get("timestamp").asLong()) );
         // insert into DB
         long newId = BuildDAO.insertBuild(currentBuild);
         System.out.println("Build id: " + newId);
     }
 
     private void buildFinished(JsonNode json) {
-        currentBuild.setFinishTime( Instant.ofEpochMilli( json.get("timestamp").asLong()) );
+        currentBuild.getTimer().setFinishTime( Instant.ofEpochMilli( json.get("timestamp").asLong()) );
     }
 
     /*

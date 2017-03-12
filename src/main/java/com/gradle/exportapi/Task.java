@@ -3,7 +3,9 @@ package com.gradle.exportapi;
 public class Task {
     private String taskId;
     private String buildId;
+    private String path;
     private String outcome;
+    private Timer timer = new Timer();
 
     public String getOutcome() {
         return outcome;
@@ -21,7 +23,7 @@ public class Task {
         this.taskId = taskId;
     }
 
-    private String path;
+
 
     public void setBuildId(String buildId) {
         this.buildId = buildId;
@@ -45,11 +47,6 @@ public class Task {
         return timer;
     }
 
-    private Timer timer = new Timer();
-
-    public long durationInMillis() {
-        return timer.durationInMillis();
-    }
 
     @Override
     public String toString() {
@@ -57,7 +54,7 @@ public class Task {
                 " taskId=" + taskId +
                 ", buildId=" + buildId +
                 ", path='" + path +
-                ", durationInMillis=" + durationInMillis() +
+                ", durationInMillis=" + getTimer().durationInMillis() +
                 ", outcome=" + outcome +
                 " }";
     }

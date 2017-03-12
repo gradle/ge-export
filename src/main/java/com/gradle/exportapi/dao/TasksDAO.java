@@ -12,7 +12,7 @@ public class TasksDAO {
                 task.getTaskId(),
                 task.getBuildId(),
                 task.getPath(),
-                task.durationInMillis(),
+                task.getTimer().durationInMillis(),
                 task.getOutcome()};
 
         String SQL = insert("tasks (task_id, build_id, path, duration_millis, outcome)", params);

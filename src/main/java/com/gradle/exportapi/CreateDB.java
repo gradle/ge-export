@@ -20,13 +20,14 @@ public class CreateDB {
 
         createTableProps.put("CREATE_BUILDS","CREATE TABLE builds(\n" +
                 "   id                   bigserial PRIMARY KEY   NOT NULL,\n" +
-                "   build_id              text      NOT NULL\n" +
+                "   build_id              text      NOT NULL,\n" +
+                "   CONSTRAINT unigue_build_id UNIQUE(build_id)\n" +
                 ");");
 
         createTableProps.put("CREATE_TASKS","CREATE TABLE tasks(\n" +
                 "   id                   bigserial PRIMARY KEY   NOT NULL,\n" +
                 "   task_id              text      NOT NULL,\n" +
-                "   build_id             text      NOT NULL,\n" +
+                "   build_id             text      NOT NULL references builds(build_id),\n" +
                 "   path                 text      NOT NULL,\n" +
                 "   duration_millis      int       NOT NULL,\n" +
                 "   outcome              text      NOT NULL\n" +
@@ -35,11 +36,12 @@ public class CreateDB {
         Yank.setupDefaultConnectionPool(dbProps);
         Yank.addSQLStatements(createTableProps);
 
-        // create table
-        Yank.executeSQLKey("DROP_BUILDS", null);
-        Yank.executeSQLKey("CREATE_BUILDS", null);
+        // create tables
 
         Yank.executeSQLKey("DROP_TASKS", null);
+        Yank.executeSQLKey("DROP_BUILDS", null);
+
+        Yank.executeSQLKey("CREATE_BUILDS", null);
         Yank.executeSQLKey("CREATE_TASKS", null);
 
         Yank.releaseDefaultConnectionPool();
