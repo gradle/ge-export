@@ -8,11 +8,14 @@ import java.util.Properties;
 public class CreateDB {
 
     public static void main(String[] args) {
+        Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
+        Yank.setupDefaultConnectionPool(dbProps);
         run();
+        Yank.releaseDefaultConnectionPool();
     }
 
     public static void run() {
-        Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
+        System.out.println("Creating Database");
 
         Properties createTableProps = new Properties();
         createTableProps.put("DROP_BUILDS", "DROP TABLE builds");
@@ -33,7 +36,7 @@ public class CreateDB {
                 "   outcome              text      NOT NULL\n" +
                 ");");
 
-        Yank.setupDefaultConnectionPool(dbProps);
+
         Yank.addSQLStatements(createTableProps);
 
         // create tables
@@ -44,7 +47,7 @@ public class CreateDB {
         Yank.executeSQLKey("CREATE_BUILDS", null);
         Yank.executeSQLKey("CREATE_TASKS", null);
 
-        Yank.releaseDefaultConnectionPool();
+
     }
 }
 

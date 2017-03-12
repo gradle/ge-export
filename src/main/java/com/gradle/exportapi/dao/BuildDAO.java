@@ -10,7 +10,7 @@ public class BuildDAO {
     public static long insertBuild(Build build) {
 
         Object[] params = new Object[] {
-                build.getBuildId(),
+                build.getBuildId()
                 };
 
         String SQL = insert("builds (build_id)", params);
