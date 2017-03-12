@@ -8,7 +8,6 @@ Table 1 - Builds
     (Build scan list page)
     user
     project
-    tasksId (foreign key into tasks table)
     console log (lower priority)
 
 Table 2 - Task Executions
