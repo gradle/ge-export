@@ -1,4 +1,4 @@
-package com.gradle.apiexport;
+package com.gradle.exportapi;
 
 import java.time.Duration;
 import java.time.Instant;

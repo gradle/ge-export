@@ -26,7 +26,7 @@ dependencies {
     testCompile 'org.testng:testng:6.10'
 }
 
-mainClassName = 'com.gradle.apiexport.Application'
+mainClassName = 'com.gradle.exportapi.Application'
 
 run {
     /* Pass all the properties to the application java process*/

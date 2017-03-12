@@ -1,4 +1,4 @@
-package com.gradle.apiexport;
+package com.gradle.exportapi;
 
 import org.knowm.yank.PropertiesUtils;
 import org.knowm.yank.Yank;
@@ -15,7 +15,14 @@ public class CreateDB {
         Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
 
         Properties createTableProps = new Properties();
+        createTableProps.put("DROP_BUILDS", "DROP TABLE builds");
         createTableProps.put("DROP_TASKS", "DROP TABLE tasks");
+
+        createTableProps.put("CREATE_BUILDS","CREATE TABLE builds(\n" +
+                "   id                   bigserial PRIMARY KEY   NOT NULL,\n" +
+                "   build_id              text      NOT NULL\n" +
+                ");");
+
         createTableProps.put("CREATE_TASKS","CREATE TABLE tasks(\n" +
                 "   id                   bigserial PRIMARY KEY   NOT NULL,\n" +
                 "   task_id              text      NOT NULL,\n" +
@@ -29,6 +36,9 @@ public class CreateDB {
         Yank.addSQLStatements(createTableProps);
 
         // create table
+        Yank.executeSQLKey("DROP_BUILDS", null);
+        Yank.executeSQLKey("CREATE_BUILDS", null);
+
         Yank.executeSQLKey("DROP_TASKS", null);
         Yank.executeSQLKey("CREATE_TASKS", null);
 

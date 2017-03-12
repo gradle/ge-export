@@ -29,4 +29,4 @@ hours - how many hours to go back from now. Default is 24hours. Use 'all' for al
 To run this sample:
 
 1. Open a terminal window.
-2. Run `./gradlew run -Dserver=upur_server_name -Dhours=24` from the command line.
+2. Run `./gradlew run -Dserver=your_server_name -Dhours=24` from the command line.

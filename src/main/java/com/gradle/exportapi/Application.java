@@ -1,4 +1,4 @@
-package com.gradle.apiexport;
+package com.gradle.exportapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +21,6 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.time.Instant.now;
-
 
 /* @Author Russel Hart rus@gradle.com */
 

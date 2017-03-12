@@ -1,22 +1,22 @@
-package com.gradle.apiexport;
+package com.gradle.exportapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.gradle.exportapi.dao.BuildDAO;
+import com.gradle.exportapi.dao.TasksDAO;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.*;
 
-import com.opencsv.*;
-
 
 class EventProcessor {
 
-    String buidlId;
-    //Map of task id to Task object
-    Map<String, Task> taskMap = new HashMap();
+    Build currentBuild;
 
-    CSVWriter csvWriter;
+    // Maps to hold in-flight objects
+    Map<String, Task> taskMap = new HashMap<>();
+
 
     private Writer createFileWriter(String fileName) {
         try {
@@ -27,19 +27,19 @@ class EventProcessor {
     }
 
     public EventProcessor(String buildId) {
-        this.buidlId = buildId;
-        csvWriter = new CSVWriter(createFileWriter("tasks.csv"), '\t');
-
-        /*
-     // feed in your array (or convert your data to an array)
-     String[] entries = "first#second#third".split("#");
-     writer.writeNext(entries);
-	 writer.close();*/
+        this.currentBuild = new Build( buildId );
     }
+
     public void process(JsonNode json) {
         String eventType = json.get("type").get("eventType").asText();
 
         switch (eventType) {
+            case "BuildStarted":
+                buildStarted(json);
+                break;
+            case "BuildFinished":
+                buildFinished(json);
+                break;
             case "TaskStarted":
                 taskStarted(json);
                 break;
@@ -47,7 +47,17 @@ class EventProcessor {
                 taskFinished(json);
                 break;
         }
+    }
 
+    private void buildStarted(JsonNode json) {
+        currentBuild.setStartTime( Instant.ofEpochMilli( json.get("timestamp").asLong()) );
+        // insert into DB
+        long newId = BuildDAO.insertBuild(currentBuild);
+        System.out.println("Build id: " + newId);
+    }
+
+    private void buildFinished(JsonNode json) {
+        currentBuild.setFinishTime( Instant.ofEpochMilli( json.get("timestamp").asLong()) );
     }
 
     /*
@@ -65,7 +75,7 @@ data: {"timestamp":1488495221555,"type":{"majorVersion":1,"minorVersion":2,"even
 
         Task task = new Task();
         task.setTaskId(taskId);
-        task.setBuildId(this.buidlId);
+        task.setBuildId(this.currentBuild.getBuildId());
         task.setPath(data.get("path").asText());
         Timer timer = task.getTimer();
         timer.setStartTime( Instant.ofEpochMilli(json.get("timestamp").asLong()));

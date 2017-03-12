@@ -1,4 +1,4 @@
-package com.gradle.apiexport;
+package com.gradle.exportapi;
 
 /**
  * Created by dvydra on 3/4/17.

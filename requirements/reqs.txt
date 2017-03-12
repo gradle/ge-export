@@ -17,7 +17,7 @@ Table 2 - Task Executions
     taskId
     buildId (foreign key into builds table)
     startTime
-    endTime
+    finishTime
     duration
     status (pass/fail)
 

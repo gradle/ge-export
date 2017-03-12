@@ -1,6 +1,6 @@
-package com.gradle.apiexport;
+package com.gradle.exportapi;
 
-class Task {
+public class Task {
     private String taskId;
     private String buildId;
     private String outcome;
@@ -47,7 +47,7 @@ class Task {
 
     private Timer timer = new Timer();
 
-    long durationInMillis() {
+    public long durationInMillis() {
         return timer.durationInMillis();
     }
 
