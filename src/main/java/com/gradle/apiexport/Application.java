@@ -25,7 +25,7 @@ import static java.time.Instant.now;
 
 /* @Author Russel Hart rus@gradle.com */
 
-public final class Export {
+public final class Application {
 
     private static String BASIC_AUTH = System.getProperty("basic_auth");
 
@@ -39,8 +39,12 @@ public final class Export {
 
     public static void main(String[] args) throws Exception {
 
-        Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
+        Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties.template");
         Yank.setupDefaultConnectionPool(dbProps);
+
+        if( System.getProperty("createDb") != null) {
+            CreateDB.run();
+        }
 
         String hoursStr = System.getProperty("hours");
 
@@ -78,7 +82,7 @@ public final class Export {
     private static Observable<String> buildIdStream(Instant since) {
 
         return buildStream(since, null)
-                .map(Export::parse)
+                .map(Application::parse)
                 .map(json -> json.get("buildId").asText());
     }
 
@@ -130,7 +134,7 @@ public final class Export {
                 .doOnNext(serverSentEvent -> lastBuildEventId.set(serverSentEvent.getEventIdAsString()))
                 .doOnSubscribe(() -> System.out.println("Streaming events for : " + buildId))
                 .filter(serverSentEvent -> serverSentEvent.getEventTypeAsString().equals("BuildEvent"))
-                .map(Export::parse)
+                .map(Application::parse)
                 .onErrorResumeNext(t -> {
                     System.out.println("Error streaming build events, resuming from " + lastBuildEventId.get() + "...");
                     return buildEventStream(buildId, lastBuildEventId.get());

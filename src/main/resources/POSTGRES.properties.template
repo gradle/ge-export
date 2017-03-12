@@ -1,4 +1,4 @@
 jdbcUrl=jdbc:postgresql://localhost:5432/postgres
-username=dvydra
+username=
 password=
 maximumPoolSize=5

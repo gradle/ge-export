@@ -18,3 +18,5 @@ build/
 .DS_Store
 exportToHTML/
 tasks.csv
+
+**/POSTGRES.properties

@@ -13,3 +13,20 @@ Additionally RDBMS data can be easily imported into most analytics tools such as
 select avg(build_duration) from builds;
 
 select build_id, duration from tasks where path=':checkstyle' and duration > 6 and start_date > '10/01/2016';
+
+# Running from Gradle
+
+## Parameters:
+
+server - Gradle Enterprise server name (assumes https on port 443)
+
+port - Gradle Enterprise server port. Defaults to 443
+
+hours - how many hours to go back from now. Default is 24hours. Use 'all' for all builds scans in the system (Warning: maybe be slow)
+
+## Setup
+
+To run this sample:
+
+1. Open a terminal window.
+2. Run `./gradlew run -Dserver=upur_server_name -Dhours=24` from the command line.
