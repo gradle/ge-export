@@ -30,7 +30,7 @@ public final class Application {
     private static String BASIC_AUTH = System.getProperty("basic_auth");
 
     private static final SocketAddress GRADLE_ENTERPRISE_SERVER = new InetSocketAddress(
-            System.getProperty("server", "ubuntu16"), Integer.parseInt( System.getProperty("port","443")) );
+            System.getProperty("server"), Integer.parseInt( System.getProperty("port","443")) );
 
     private static final HttpClient<ByteBuf, ByteBuf> HTTP_CLIENT = HttpClient.newClient(GRADLE_ENTERPRISE_SERVER).unsafeSecure();
     private static final int THROTTLE = 5;

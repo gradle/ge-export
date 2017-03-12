@@ -18,10 +18,11 @@ public class CreateDB {
         createTableProps.put("DROP_TASKS", "DROP TABLE tasks");
         createTableProps.put("CREATE_TASKS","CREATE TABLE tasks(\n" +
                 "   id                   bigserial PRIMARY KEY   NOT NULL,\n" +
-                "   task_id              text     NOT NULL,   \n" +
-                "   build_id             text    NOT NULL,  \n" +
-                "   path                 text     NOT NULL, \n" +
-                "   duration_millis      int  NOT NULL" +
+                "   task_id              text      NOT NULL,\n" +
+                "   build_id             text      NOT NULL,\n" +
+                "   path                 text      NOT NULL,\n" +
+                "   duration_millis      int       NOT NULL,\n" +
+                "   outcome              text      NOT NULL\n" +
                 ");");
 
         Yank.setupDefaultConnectionPool(dbProps);

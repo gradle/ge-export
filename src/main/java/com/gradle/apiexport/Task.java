@@ -3,6 +3,15 @@ package com.gradle.apiexport;
 class Task {
     private String taskId;
     private String buildId;
+    private String outcome;
+
+    public String getOutcome() {
+        return outcome;
+    }
+
+    public void setOutcome(String outcome) {
+        this.outcome = outcome;
+    }
 
     public String getTaskId() {
         return taskId;
@@ -44,11 +53,12 @@ class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "Task {" +
                 " taskId=" + taskId +
                 ", buildId=" + buildId +
                 ", path='" + path +
                 ", durationInMillis=" + durationInMillis() +
-                '}';
+                ", outcome=" + outcome +
+                " }";
     }
 }

@@ -15,8 +15,14 @@ public class TasksDAO {
 
     public static long insertTask(Task task) {
 
-        Object[] params = new Object[] { task.getTaskId(), task.getBuildId(), task.getPath(), task.durationInMillis()};
-        String SQL = "INSERT INTO tasks (task_id, build_id, path, duration_millis) " + valuesForInsert(params);
+        Object[] params = new Object[] {
+                task.getTaskId(),
+                task.getBuildId(),
+                task.getPath(),
+                task.durationInMillis(),
+                task.getOutcome()};
+
+        String SQL = "INSERT INTO tasks (task_id, build_id, path, duration_millis, outcome) " + valuesForInsert(params);
         return Yank.insert(SQL, params);
     }
 }
