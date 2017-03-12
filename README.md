@@ -24,6 +24,8 @@ select b.build_id, b.start from builds b, tasks t where b.build_id = t.build_id 
 
 -DcreateDb - drops and creates all tables
 
+-Dbasic_auth - base64 encoded username:password
+
 ## Setup
 
 To run this sample:
