@@ -10,9 +10,7 @@ Additionally RDBMS data can be easily imported into most analytics tools such as
 
 ## Example Queries
 
-select avg(build_duration) from builds;
-
-select build_id, duration from tasks where path=':checkstyle' and duration > 6 and start_date > '10/01/2016';
+select b.build_id, b.start from builds b, tasks t where b.build_id = t.build_id and path = ':test' and duration_millis > 1000;
 
 # Running from Gradle
 
