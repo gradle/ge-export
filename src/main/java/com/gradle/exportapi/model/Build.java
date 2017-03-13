@@ -1,6 +1,16 @@
-package com.gradle.exportapi;
+package com.gradle.exportapi.model;
 
 public class Build {
+
+    private long id;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     private String buildId;
 

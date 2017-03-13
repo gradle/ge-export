@@ -1,4 +1,4 @@
-package com.gradle.exportapi;
+package com.gradle.exportapi.model;
 
 public class Task {
     private String taskId;

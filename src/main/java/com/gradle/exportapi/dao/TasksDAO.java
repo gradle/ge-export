@@ -1,6 +1,6 @@
 package com.gradle.exportapi.dao;
 
-import com.gradle.exportapi.Task;
+import com.gradle.exportapi.model.Task;
 import static com.gradle.exportapi.dbutil.SQLHelper.*;
 import org.knowm.yank.*;
 

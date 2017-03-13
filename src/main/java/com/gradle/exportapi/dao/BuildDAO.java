@@ -2,7 +2,7 @@ package com.gradle.exportapi.dao;
 
 import static com.gradle.exportapi.dbutil.SQLHelper.*;
 
-import com.gradle.exportapi.Build;
+import com.gradle.exportapi.model.Build;
 import org.knowm.yank.*;
 
 import java.time.OffsetDateTime;

@@ -3,11 +3,13 @@ package com.gradle.exportapi;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.gradle.exportapi.dao.BuildDAO;
 import com.gradle.exportapi.dao.TasksDAO;
+import com.gradle.exportapi.model.Build;
+import com.gradle.exportapi.model.Task;
+import com.gradle.exportapi.model.Timer;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.*;
 
 
 class EventProcessor {
@@ -49,8 +51,9 @@ class EventProcessor {
 
     private void gradleLoaded(JsonNode json) {
         // insert into DB
-        long newId = BuildDAO.insertBuild(currentBuild);
-        System.out.println("Build id: " + newId);
+
+        currentBuild.setId( BuildDAO.insertBuild(currentBuild) );
+        System.out.println("DB-generated id: " + currentBuild.getId());
     }
 
     private void locality(JsonNode json) {

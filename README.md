@@ -30,5 +30,8 @@ select b.build_id, b.start from builds b, tasks t where b.build_id = t.build_id 
 
 To run this sample:
 
-1. Open a terminal window.
-2. Run `./gradlew run -Dserver=your_server_name -Dhours=24 -DcreateDb` from the command line.
+- Open a terminal window.
+
+- Copy ../ge-export/src/main/resources/POSTGRES.properties.template to POSTGRES.properties in same dir and fill in DB info.
+
+- Run `./gradlew run -Dserver=your_server_name -Dhours=24 -DcreateDb` from the command line.
