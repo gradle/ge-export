@@ -85,8 +85,8 @@ public final class Application {
                 .map(json -> json.get("buildId").asText());
     }
 
-    private static Observable<ServerSentEvent> buildStream(Instant since, String lastEventId) {
-        System.out.println("Build stream from " + lastEventId);
+    private static Observable<ServerSentEvent> buildStream(Instant since, String lastBuildEventId) {
+        System.out.println("Build stream from " + lastBuildEventId);
         AtomicReference<String> lastBuildId = new AtomicReference<>(null);
 
         HttpClientRequest<ByteBuf, ByteBuf> request = HTTP_CLIENT
@@ -96,8 +96,8 @@ public final class Application {
             request = request.addHeader("Authorization", "Basic " + BASIC_AUTH);
         };
 
-        if (lastEventId != null) {
-            request.addHeader("Last-Event-ID", lastEventId);
+        if (lastBuildEventId != null) {
+            request.addHeader("Last-Event-ID", lastBuildEventId);
         }
 
         return request
