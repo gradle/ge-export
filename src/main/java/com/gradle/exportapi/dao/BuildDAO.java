@@ -13,7 +13,7 @@ public class BuildDAO {
     public static long insertBuild(Build build) {
 
         OffsetDateTime start = OffsetDateTime.ofInstant
-                (build.getTimer().getStartTime(), ZoneId.of(build.getTimeZoneId()));
+                (build.getTimer().getStartTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
 
         Object[] params = new Object[] {
                 build.getBuildId(),

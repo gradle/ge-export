@@ -35,7 +35,6 @@ class EventProcessor {
             case "GradleLoaded":
                 gradleLoaded(json);
                 break;
-
             case "BuildFinished":
                 buildFinished(json);
                 break;
@@ -55,9 +54,9 @@ class EventProcessor {
     }
 
     private void locality(JsonNode json) {
-        currentBuild.setTimeZoneId( json.get("data").get("timeZoneId").asText() );
+        currentBuild.getTimer().setTimeZoneId( json.get("data").get("timeZoneId").asText() );
 
-        assert currentBuild.getTimeZoneId() != null;
+        assert currentBuild.getTimer().getTimeZoneId() != null;
     }
 
     private void buildStarted(JsonNode json) {

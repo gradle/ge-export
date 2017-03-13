@@ -6,6 +6,10 @@ import java.time.Instant;
 
 public class Timer {
 
+    private Instant startTime;
+    private Instant finishTime;
+    private String timeZoneId;
+
     public Instant getStartTime() {
         return startTime;
     }
@@ -22,8 +26,14 @@ public class Timer {
         this.finishTime = finishTime;
     }
 
-    private Instant startTime;
-    private Instant finishTime;
+    public String getTimeZoneId() {
+        return timeZoneId;
+    }
+
+    public void setTimeZoneId(String timeZoneId) {
+        this.timeZoneId = timeZoneId;
+    }
+
 
     public double durationInSec() {
         return durationInMillis() / 1000;
