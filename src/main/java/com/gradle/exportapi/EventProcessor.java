@@ -22,6 +22,8 @@ class EventProcessor {
 
     public EventProcessor(String buildId) {
         this.currentBuild = new Build( buildId );
+        currentBuild.setId( BuildDAO.insertBuild(currentBuild) );
+        System.out.println("DB-generated id: " + currentBuild.getId());
     }
 
     public void process(JsonNode json) {
@@ -33,9 +35,6 @@ class EventProcessor {
                 break;
             case "Locality":
                 locality(json);
-                break;
-            case "GradleLoaded":
-                gradleLoaded(json);
                 break;
             case "BuildFinished":
                 buildFinished(json);
@@ -49,13 +48,6 @@ class EventProcessor {
         }
     }
 
-    private void gradleLoaded(JsonNode json) {
-        // insert into DB
-
-        currentBuild.setId( BuildDAO.insertBuild(currentBuild) );
-        System.out.println("DB-generated id: " + currentBuild.getId());
-    }
-
     private void locality(JsonNode json) {
         currentBuild.getTimer().setTimeZoneId( json.get("data").get("timeZoneId").asText() );
 
@@ -64,11 +56,12 @@ class EventProcessor {
 
     private void buildStarted(JsonNode json) {
         currentBuild.getTimer().setStartTime( Instant.ofEpochMilli( json.get("timestamp").asLong()) );
-
     }
 
     private void buildFinished(JsonNode json) {
         currentBuild.getTimer().setFinishTime( Instant.ofEpochMilli( json.get("timestamp").asLong()) );
+        int affectedRows = BuildDAO.updateBuild(currentBuild);
+        System.out.println("Updated " + affectedRows + " rows in builds table. Build: " + currentBuild.toString());
     }
 
     /*
