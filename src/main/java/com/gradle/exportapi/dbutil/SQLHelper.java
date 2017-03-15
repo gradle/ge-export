@@ -9,7 +9,9 @@ public class SQLHelper {
         return "INSERT INTO " + body + valuesForInsert(params);
     }
 
-    public static String valuesForInsert(Object[] params) {
+
+
+    static String valuesForInsert(Object[] params) {
         return " VALUES ("
                 + Arrays.stream(params).map(o -> "?").collect(Collectors.joining(","))
                 + ")";

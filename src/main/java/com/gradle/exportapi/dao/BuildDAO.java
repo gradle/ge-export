@@ -12,15 +12,30 @@ public class BuildDAO {
 
     public static long insertBuild(Build build) {
 
+
+
+        Object[] params = new Object[] {
+                build.getBuildId()
+                };
+
+        String SQL = insert("builds (build_id)", params);
+        return Yank.insert(SQL, params);
+    }
+
+    public static int updateBuild(Build build) {
+        String sql = "UPDATE builds SET start =  ?, finish = ? WHERE build_id = '" + build.getBuildId() + "'";
+
         OffsetDateTime start = OffsetDateTime.ofInstant
                 (build.getTimer().getStartTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
 
-        Object[] params = new Object[] {
-                build.getBuildId(),
-                start
-                };
+        OffsetDateTime finish = OffsetDateTime.ofInstant
+                (build.getTimer().getStartTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
 
-        String SQL = insert("builds (build_id, start)", params);
-        return Yank.insert(SQL, params);
+        Object[] params = new Object[] {
+                start, finish
+        };
+        return Yank.execute(sql, params);
+
     }
+
 }
