@@ -26,7 +26,7 @@ class CreateDB {
                 "   build_id             text      NOT NULL,\n" +
                 "   start                timestamp with time zone,\n" +
                 "   finish               timestamp with time zone,\n" +
-                "   CONSTRAINT unigue_build_id UNIQUE(build_id)\n" +
+                "   CONSTRAINT unique_build_id UNIQUE(build_id)\n" +
                 ");");
 
         createTableProps.put("CREATE_TASKS","CREATE TABLE tasks(\n" +
