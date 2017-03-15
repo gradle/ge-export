@@ -23,6 +23,9 @@ class EventProcessor {
     public EventProcessor(String buildId) {
         this.currentBuild = new Build( buildId );
         currentBuild.setId( BuildDAO.insertBuild(currentBuild) );
+        if(currentBuild.getId() == 0) {
+            throw new RuntimeException("Unable to save build record for " + currentBuild.getBuildId());
+        }
         System.out.println("DB-generated id: " + currentBuild.getId());
     }
 
