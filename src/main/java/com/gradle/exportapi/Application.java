@@ -97,7 +97,7 @@ final class Application {
         }
 
         if (lastBuildEventId != null) {
-            request.addHeader("Last-Event-ID", lastBuildEventId);
+            request = request.addHeader("Last-Event-ID", lastBuildEventId);
         }
 
         return request
@@ -125,7 +125,7 @@ final class Application {
         }
 
         if (lastEventId != null) {
-            request.addHeader("Last-Event-ID", lastEventId);
+            request = request.addHeader("Last-Event-ID", lastEventId);
         }
 
         return request
