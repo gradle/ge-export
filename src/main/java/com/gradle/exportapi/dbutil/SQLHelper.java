@@ -11,7 +11,7 @@ public class SQLHelper {
 
 
 
-    static String valuesForInsert(Object[] params) {
+    private static String valuesForInsert(Object[] params) {
         return " VALUES ("
                 + Arrays.stream(params).map(o -> "?").collect(Collectors.joining(","))
                 + ")";

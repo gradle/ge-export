@@ -18,6 +18,7 @@ public class Timer {
         this.startTime = startTime;
     }
 
+    @SuppressWarnings("unused")
     public Instant getFinishTime() {
         return finishTime;
     }
@@ -35,6 +36,7 @@ public class Timer {
     }
 
 
+    @SuppressWarnings("unused")
     public double durationInSec() {
         return durationInMillis() / 1000;
     }

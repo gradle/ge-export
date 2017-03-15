@@ -5,7 +5,7 @@ import org.knowm.yank.Yank;
 
 import java.util.Properties;
 
-public class CreateDB {
+class CreateDB {
 
     public static void main(String[] args) {
         Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");

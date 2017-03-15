@@ -5,7 +5,7 @@ public class Task {
     private String buildId;
     private String path;
     private String outcome;
-    private Timer timer = new Timer();
+    private final Timer timer = new Timer();
 
     public String getOutcome() {
         return outcome;

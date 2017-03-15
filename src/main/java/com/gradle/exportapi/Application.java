@@ -24,9 +24,9 @@ import static java.time.Instant.now;
 
 /* @Author Russel Hart rus@gradle.com */
 
-public final class Application {
+final class Application {
 
-    private static String BASIC_AUTH = System.getProperty("basic_auth");
+    private static final String BASIC_AUTH = System.getProperty("basic_auth");
 
     private static final SocketAddress GRADLE_ENTERPRISE_SERVER = new InetSocketAddress(
             System.getProperty("server"), Integer.parseInt( System.getProperty("port","443")) );
@@ -94,10 +94,10 @@ public final class Application {
                 .setKeepAlive(true);
         if(BASIC_AUTH != null) {
             request = request.addHeader("Authorization", "Basic " + BASIC_AUTH);
-        };
+        }
 
         if (lastBuildEventId != null) {
-            request = request.addHeader("Last-Event-ID", lastBuildEventId);
+            request.addHeader("Last-Event-ID", lastBuildEventId);
         }
 
         return request
@@ -122,7 +122,7 @@ public final class Application {
                 .setKeepAlive(true);
         if(BASIC_AUTH != null) {
             request = request.addHeader("Authorization", "Basic " + BASIC_AUTH);
-        };
+        }
 
         if (lastEventId != null) {
             request.addHeader("Last-Event-ID", lastEventId);

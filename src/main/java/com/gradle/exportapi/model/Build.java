@@ -3,8 +3,8 @@ package com.gradle.exportapi.model;
 public class Build {
 
     private long id;
-    private String buildId;
-    private Timer timer = new Timer();
+    private final String buildId;
+    private final Timer timer = new Timer();
 
     public Build(String buildId) {
         this.buildId = buildId;

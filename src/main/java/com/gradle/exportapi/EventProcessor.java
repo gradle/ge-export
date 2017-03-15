@@ -14,10 +14,10 @@ import java.util.Map;
 
 class EventProcessor {
 
-    Build currentBuild;
+    private final Build currentBuild;
 
     // Maps to hold in-flight objects
-    Map<String, Task> taskMap = new HashMap<>();
+    private final Map<String, Task> taskMap = new HashMap<>();
 
 
     public EventProcessor(String buildId) {
@@ -72,7 +72,7 @@ class EventProcessor {
 event: BuildEvent
 data: {"timestamp":1488495221555,"type":{"majorVersion":1,"minorVersion":2,"eventType":"TaskStarted"},"data":{"id":-2556824238716145285,"path":":compileJava","className":"org.gradle.api.tasks.compile.JavaCompile_Decorated","thread":0,"noActions":false}}
      */
-    void taskStarted(JsonNode json) {
+    private void taskStarted(JsonNode json) {
         JsonNode data = json.get("data");
         JsonNode id = data.get("id");
         assert id != null;
@@ -97,7 +97,7 @@ data: {"timestamp":1488495221566,"type":{"majorVersion":1,"minorVersion":3,"even
 
 id: 39
      */
-    void taskFinished(JsonNode json) {
+    private void taskFinished(JsonNode json) {
         JsonNode id = json.get("data").get("id");
         assert id != null;
         String taskId = id.asText();
@@ -105,7 +105,7 @@ id: 39
         Task task = taskMap.get(taskId);
         if(task == null) {
             throw new RuntimeException("Could not find task with id: " + taskId + " in the task map");
-        };
+        }
 
         JsonNode timestamp = json.get("timestamp");
         assert timestamp != null;
