@@ -96,9 +96,9 @@ final class Application {
                 .map(json -> json.get("buildId").asText());
     }
 
-    private static Observable<ServerSentEvent> buildStream(Instant since, String lastBuildEventId) {
-        System.out.println("Build stream from " + lastBuildEventId);
-        AtomicReference<String> lastBuildId = new AtomicReference<>(null);
+    private static Observable<ServerSentEvent> buildStream(Instant since, String lastStreamedBuildId) {
+
+        AtomicReference<String> _lastBuildId = new AtomicReference<>(null);
 
         final String buildsSinceUri = "/build-export/v1/builds/since/" + String.valueOf(since.toEpochMilli());
         System.out.println("Builds uri: " + buildsSinceUri);
@@ -110,17 +110,17 @@ final class Application {
             request = request.addHeader("Authorization", "Basic " + BASIC_AUTH);
         }
 
-        if (lastBuildEventId != null) {
-            request = request.addHeader("Last-Event-ID", lastBuildEventId);
+        if (lastStreamedBuildId != null) {
+            request = request.addHeader("Last-Event-ID", lastStreamedBuildId);
         }
 
         return request
                 .flatMap(HttpClientResponse::getContentAsServerSentEvents)
-                .doOnNext(serverSentEvent -> lastBuildId.set(serverSentEvent.getEventIdAsString()))
+                .doOnNext(serverSentEvent -> _lastBuildId.set(serverSentEvent.getEventIdAsString()))
                 .doOnSubscribe(() -> System.out.println("Streaming builds..."))
                 .onErrorResumeNext(t -> {
-                    System.out.println("Error streaming builds, resuming from " + lastBuildId.get() + "...");
-                    return buildStream(since, lastBuildId.get());
+                    System.out.println("Error streaming builds, resuming from build id: " + _lastBuildId.get());
+                    return buildStream(since, _lastBuildId.get());
                 });
     }
 
@@ -129,7 +129,7 @@ final class Application {
     }
 
     private static Observable<JsonNode> buildEventStream(String buildId, String lastEventId) {
-        AtomicReference<String> lastBuildEventId = new AtomicReference<>(null);
+        AtomicReference<String> _lastBuildEventId = new AtomicReference<>(null);
 
         HttpClientRequest<ByteBuf, ByteBuf> request = HTTP_CLIENT
                 .createGet("/build-export/v1/build/" + buildId + "/events")
@@ -144,13 +144,13 @@ final class Application {
 
         return request
                 .flatMap(HttpClientResponse::getContentAsServerSentEvents)
-                .doOnNext(serverSentEvent -> lastBuildEventId.set(serverSentEvent.getEventIdAsString()))
+                .doOnNext(serverSentEvent -> _lastBuildEventId.set(serverSentEvent.getEventIdAsString()))
                 .doOnSubscribe(() -> System.out.println("Streaming events for : " + buildId))
                 .filter(serverSentEvent -> serverSentEvent.getEventTypeAsString().equals("BuildEvent"))
                 .map(Application::parse)
                 .onErrorResumeNext(t -> {
-                    System.out.println("Error streaming build events, resuming from " + lastBuildEventId.get() + "...");
-                    return buildEventStream(buildId, lastBuildEventId.get());
+                    System.out.println("Error streaming build events, resuming from " + _lastBuildEventId.get() + "...");
+                    return buildEventStream(buildId, _lastBuildEventId.get());
                 });
     }
 

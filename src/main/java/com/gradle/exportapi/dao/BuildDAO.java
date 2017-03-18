@@ -23,6 +23,7 @@ public class BuildDAO {
     }
 
     public static int updateBuild(Build build) {
+        System.out.println("Updating build:" + build.getBuildId());
         String sql = "UPDATE builds SET start =  ?, finish = ? WHERE build_id = '" + build.getBuildId() + "'";
 
         OffsetDateTime start = OffsetDateTime.ofInstant

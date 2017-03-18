@@ -111,13 +111,11 @@ id: 39
         assert timestamp != null;
         Timer timer = task.getTimer();
         timer.setFinishTime( Instant.ofEpochMilli(timestamp.asLong()) );
-        System.out.println("Task: " + task);
 
         task.setOutcome( json.get("data").get("outcome").asText());
 
         // insert into DB
         long newId = TasksDAO.insertTask(task);
-        System.out.println("Created rec id: " + newId);
         taskMap.remove(taskId);
     }
 }

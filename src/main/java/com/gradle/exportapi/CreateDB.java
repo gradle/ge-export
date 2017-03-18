@@ -32,10 +32,11 @@ class CreateDB {
         createTableProps.put("CREATE_TASKS","CREATE TABLE tasks(\n" +
                 "   id                   bigserial PRIMARY KEY   NOT NULL,\n" +
                 "   task_id              text      NOT NULL,\n" +
-                "   build_id             text      NOT NULL references builds(build_id),\n" +
+                "   build_id             text      NOT NULL references builds(build_id) ON DELETE CASCADE,\n" +
                 "   path                 text      NOT NULL,\n" +
                 "   duration_millis      int       NOT NULL,\n" +
-                "   outcome              text      NOT NULL\n" +
+                "   outcome              text      NOT NULL,\n" +
+                "   CONSTRAINT unique_build_path UNIQUE(build_id,path)\n" +
                 ");");
 
 

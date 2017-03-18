@@ -7,7 +7,6 @@ import org.knowm.yank.*;
 public class TasksDAO {
 
     public static long insertTask(Task task) {
-
         Object[] params = new Object[] {
                 task.getTaskId(),
                 task.getBuildId(),
@@ -16,6 +15,8 @@ public class TasksDAO {
                 task.getOutcome()};
 
         String SQL = insert("tasks (task_id, build_id, path, duration_millis, outcome)", params);
-        return Yank.insert(SQL, params);
+        long newId = Yank.insert(SQL, params);
+        System.out.println("Created task id: " + newId + " task: " + task.getPath() + " for build: " + task.getBuildId());
+        return newId;
     }
 }
