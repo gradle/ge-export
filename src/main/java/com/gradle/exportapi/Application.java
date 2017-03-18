@@ -2,6 +2,7 @@ package com.gradle.exportapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gradle.exportapi.model.Build;
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientRequest;
@@ -78,9 +79,19 @@ final class Application {
         Yank.releaseDefaultConnectionPool();
     }
 
+    private static String findLastBuildId() {
+        String sql = "select build_id from builds where id in (select max(id) from builds);";
+        Build build = Yank.queryBean(sql, Build.class, new Object[0] );
+        return build !=null ? build.getBuildId() : null;
+    }
+
     private static Observable<String> buildIdStream(Instant since) {
 
-        return buildStream(since, null)
+        String lastBuildEventId = findLastBuildId();
+
+        System.out.println("lastBuildEventId: " + lastBuildEventId);
+
+        return buildStream(since, lastBuildEventId)
                 .map(Application::parse)
                 .map(json -> json.get("buildId").asText());
     }
@@ -89,8 +100,11 @@ final class Application {
         System.out.println("Build stream from " + lastBuildEventId);
         AtomicReference<String> lastBuildId = new AtomicReference<>(null);
 
+        final String buildsSinceUri = "/build-export/v1/builds/since/" + String.valueOf(since.toEpochMilli());
+        System.out.println("Builds uri: " + buildsSinceUri);
+
         HttpClientRequest<ByteBuf, ByteBuf> request = HTTP_CLIENT
-                .createGet("/build-export/v1/builds/since/" + String.valueOf(since.toEpochMilli()))
+                .createGet(buildsSinceUri)
                 .setKeepAlive(true);
         if(BASIC_AUTH != null) {
             request = request.addHeader("Authorization", "Basic " + BASIC_AUTH);
