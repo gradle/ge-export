@@ -1,12 +1,10 @@
 # Summary
 
-The goal of this project is to create an simple ETL process for the Gradle Enterprise Export API.
+This project demonstrate the Extract-Transform-Load (ETL) of data obtained from Gradle Enteprise Export API.
 
 # Motivation
 
-Gradle Enterprise Export API (https://docs.gradle.com/enterprise/export-api) is a streaming API and can be imported into any appropriate datastore for ad-hoc analysis. This project will provide a simple ETL script to import data into a 'denormalized' RDBMS for easy querying via standard SQL.
-
-Additionally RDBMS data can be easily imported into most analytics tools such as Tableau.
+Gradle Enterprise Export API (https://docs.gradle.com/enterprise/export-api) is a streaming API that produces a stream of events that occured during the buid execution. Export API is implemented via Server-Sent Events which makes it convenient for real-time monitoring but not ncessarily for ah-hoc analysis. By loading the data into an RDBMS we gain the full power of SQL and the ability to easily load the data into specialized analysis and visualization tools.
 
 ## Example Queries
 
