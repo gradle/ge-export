@@ -4,7 +4,7 @@ This project demonstrate the Extract-Transform-Load (ETL) of data obtained from 
 
 # Motivation
 
-Gradle Enterprise Export API (https://docs.gradle.com/enterprise/export-api) is a streaming API that produces a stream of events that occured during the buid execution. Export API is implemented via Server-Sent Events which makes it convenient for real-time monitoring but not ncessarily for ah-hoc analysis. By loading the data into an RDBMS we gain the full power of SQL and the ability to easily load the data into specialized analysis and visualization tools.
+Gradle Enterprise Export API (https://docs.gradle.com/enterprise/export-api) is a streaming API that produces a stream of events that occured during the execution of the buid. Export API is implemented via Server-Sent Events which makes it convenient for real-time monitoring but not ncessarily for ah-hoc analysis. By loading the data into an RDBMS we gain the full power of SQL and the ability to easily load the data into specialized analysis and visualization tools.
 
 ## Example Queries
 
