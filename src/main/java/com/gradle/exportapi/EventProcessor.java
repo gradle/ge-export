@@ -1,7 +1,6 @@
 package com.gradle.exportapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.gradle.exportapi.dao.BuildDAO;
 import com.gradle.exportapi.dao.TasksDAO;
 import com.gradle.exportapi.model.Build;
 import com.gradle.exportapi.model.Task;
@@ -10,6 +9,8 @@ import com.gradle.exportapi.model.Timer;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.gradle.exportapi.dao.BuildDAO.*;
 
 
 class EventProcessor {
@@ -22,7 +23,7 @@ class EventProcessor {
 
     public EventProcessor(String buildId) {
         this.currentBuild = new Build( buildId );
-        currentBuild.setId( BuildDAO.insertBuild(currentBuild) );
+        currentBuild.setId( insertBuild(currentBuild) );
         if(currentBuild.getId() == 0) {
             throw new RuntimeException("Unable to save build record for " + currentBuild.getBuildId());
         }
@@ -63,7 +64,7 @@ class EventProcessor {
 
     private void buildFinished(JsonNode json) {
         currentBuild.getTimer().setFinishTime( Instant.ofEpochMilli( json.get("timestamp").asLong()) );
-        int affectedRows = BuildDAO.updateBuild(currentBuild);
+        int affectedRows = updateBuild(currentBuild);
         System.out.println("Updated " + affectedRows + " rows in builds table. Build: " + currentBuild.toString());
     }
 

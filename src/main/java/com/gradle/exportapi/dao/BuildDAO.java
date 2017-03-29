@@ -12,11 +12,9 @@ public class BuildDAO {
 
     public static long insertBuild(Build build) {
 
-
-
-        Object[] params = new Object[] {
+        Object[] params = new Object[]{
                 build.getBuildId()
-                };
+        };
 
         String SQL = insert("builds (build_id)", params);
         return Yank.insert(SQL, params);
@@ -32,11 +30,13 @@ public class BuildDAO {
         OffsetDateTime finish = OffsetDateTime.ofInstant
                 (build.getTimer().getStartTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
 
-        Object[] params = new Object[] {
-                start, finish
-        };
+        Object[] params = new Object[] { start, finish };
         return Yank.execute(sql, params);
-
     }
 
+    public static String findLastBuildId() {
+        String sql = "select build_id from builds where id in (select max(id) from builds);";
+        Build build = Yank.queryBean(sql, Build.class, new Object[0] );
+        return build !=null ? build.getBuildId() : null;
+    }
 }

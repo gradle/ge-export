@@ -2,7 +2,7 @@ package com.gradle.exportapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gradle.exportapi.model.Build;
+
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientRequest;
@@ -22,6 +22,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.time.Instant.now;
+import static com.gradle.exportapi.dao.BuildDAO.*;
 
 /* @Author Russel Hart rus@gradle.com */
 
@@ -77,12 +78,6 @@ final class Application {
                 );
 
         Yank.releaseDefaultConnectionPool();
-    }
-
-    private static String findLastBuildId() {
-        String sql = "select build_id from builds where id in (select max(id) from builds);";
-        Build build = Yank.queryBean(sql, Build.class, new Object[0] );
-        return build !=null ? build.getBuildId() : null;
     }
 
     private static Observable<String> buildIdStream(Instant since) {
