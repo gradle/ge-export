@@ -1,6 +1,6 @@
 # Summary
 
-This project demonstrate the Extract-Transform-Load (ETL) of data obtained from Gradle Enteprise Export API.
+This project demonstrate the Extract-Transform-Load (ETL) of data obtained from the Gradle Enteprise Export API.
 
 # Motivation
 
