@@ -2,10 +2,14 @@ package com.gradle.exportapi;
 
 import org.knowm.yank.PropertiesUtils;
 import org.knowm.yank.Yank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
 class CreateDB {
+
+    static final Logger log = LoggerFactory.getLogger(CreateDB.class);
 
     public static void main(String[] args) {
         Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
@@ -15,7 +19,7 @@ class CreateDB {
     }
 
     public static void run() {
-        System.out.println("Creating Database");
+        log.info("Creating Database");
 
         Properties createTableProps = new Properties();
         createTableProps.put("DROP_BUILDS", "DROP TABLE builds");

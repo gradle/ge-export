@@ -1,5 +1,7 @@
 package com.gradle.exportapi;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.gradle.exportapi.dao.TasksDAO;
 import com.gradle.exportapi.model.Build;
@@ -15,6 +17,8 @@ import static com.gradle.exportapi.dao.BuildDAO.*;
 
 class EventProcessor {
 
+    static final Logger log = LoggerFactory.getLogger(EventProcessor.class);
+
     private final Build currentBuild;
 
     // Maps to hold in-flight objects
@@ -27,7 +31,7 @@ class EventProcessor {
         if(currentBuild.getId() == 0) {
             throw new RuntimeException("Unable to save build record for " + currentBuild.getBuildId());
         }
-        System.out.println("DB-generated id: " + currentBuild.getId());
+        log.debug("DB-generated id: " + currentBuild.getId());
     }
 
     public void process(JsonNode json) {
@@ -65,7 +69,7 @@ class EventProcessor {
     private void buildFinished(JsonNode json) {
         currentBuild.getTimer().setFinishTime( Instant.ofEpochMilli( json.get("timestamp").asLong()) );
         int affectedRows = updateBuild(currentBuild);
-        System.out.println("Updated " + affectedRows + " rows in builds table. Build: " + currentBuild.toString());
+        log.info("Updated " + affectedRows + " rows in builds table. Build: " + currentBuild.toString());
     }
 
     /*

@@ -2,7 +2,6 @@ package com.gradle.exportapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientRequest;
@@ -20,13 +19,17 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import static com.gradle.exportapi.dao.BuildDAO.findLastBuildId;
 import static java.time.Instant.now;
-import static com.gradle.exportapi.dao.BuildDAO.*;
 
 /* @Author Russel Hart rus@gradle.com */
 
 final class Application {
+
+    public static final Logger log = LoggerFactory.getLogger(Application.class);
 
     private static final String BASIC_AUTH = System.getProperty("basic_auth");
 
@@ -56,7 +59,7 @@ final class Application {
         }
         else if(hoursStr.equals("all")) {
             since = Instant.EPOCH;
-            System.out.println("Calculating for all stored build scans");
+            log.info("Calculating for all stored build scans");
         } else {
             since = now().minus(Duration.ofHours( Integer.parseInt(hoursStr)));
         }
@@ -84,7 +87,7 @@ final class Application {
 
         String lastBuildEventId = findLastBuildId();
 
-        System.out.println("lastBuildEventId: " + lastBuildEventId);
+        log.info("lastBuildEventId: " + lastBuildEventId);
 
         return buildStream(since, lastBuildEventId)
                 .map(Application::parse)
@@ -96,7 +99,7 @@ final class Application {
         AtomicReference<String> _lastBuildId = new AtomicReference<>(null);
 
         final String buildsSinceUri = "/build-export/v1/builds/since/" + String.valueOf(since.toEpochMilli());
-        System.out.println("Builds uri: " + buildsSinceUri);
+        log.info("Builds uri: " + buildsSinceUri);
 
         HttpClientRequest<ByteBuf, ByteBuf> request = HTTP_CLIENT
                 .createGet(buildsSinceUri)
@@ -112,9 +115,9 @@ final class Application {
         return request
                 .flatMap(HttpClientResponse::getContentAsServerSentEvents)
                 .doOnNext(serverSentEvent -> _lastBuildId.set(serverSentEvent.getEventIdAsString()))
-                .doOnSubscribe(() -> System.out.println("Streaming builds..."))
+                .doOnSubscribe(() -> log.info("Streaming builds..."))
                 .onErrorResumeNext(t -> {
-                    System.out.println("Error streaming builds, resuming from build id: " + _lastBuildId.get());
+                    log.info("Error streaming builds, resuming from build id: " + _lastBuildId.get());
                     return buildStream(since, _lastBuildId.get());
                 });
     }
@@ -140,11 +143,11 @@ final class Application {
         return request
                 .flatMap(HttpClientResponse::getContentAsServerSentEvents)
                 .doOnNext(serverSentEvent -> _lastBuildEventId.set(serverSentEvent.getEventIdAsString()))
-                .doOnSubscribe(() -> System.out.println("Streaming events for : " + buildId))
+                .doOnSubscribe(() -> log.info("Streaming events for : " + buildId))
                 .filter(serverSentEvent -> serverSentEvent.getEventTypeAsString().equals("BuildEvent"))
                 .map(Application::parse)
                 .onErrorResumeNext(t -> {
-                    System.out.println("Error streaming build events, resuming from " + _lastBuildEventId.get() + "...");
+                    log.info("Error streaming build events, resuming from " + _lastBuildEventId.get() + "...");
                     return buildEventStream(buildId, _lastBuildEventId.get());
                 });
     }

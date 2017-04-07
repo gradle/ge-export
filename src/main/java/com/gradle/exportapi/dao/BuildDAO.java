@@ -4,11 +4,15 @@ import static com.gradle.exportapi.dbutil.SQLHelper.*;
 
 import com.gradle.exportapi.model.Build;
 import org.knowm.yank.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
 public class BuildDAO {
+
+    static final Logger log = LoggerFactory.getLogger(BuildDAO.class);
 
     public static long insertBuild(Build build) {
 
@@ -21,7 +25,7 @@ public class BuildDAO {
     }
 
     public static int updateBuild(Build build) {
-        System.out.println("Updating build:" + build.getBuildId());
+        log.info("Updating build:" + build.getBuildId());
         String sql = "UPDATE builds SET start =  ?, finish = ? WHERE build_id = '" + build.getBuildId() + "'";
 
         OffsetDateTime start = OffsetDateTime.ofInstant

@@ -16,10 +16,11 @@ dependencies {
     compile 'io.reactivex:rxnetty-http:0.5.2-rc.5'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.2'
     compile 'io.reactivex:rxjava-math:1.0.0'
-    compile group: 'com.opencsv', name: 'opencsv', version: '3.9'
-    compile group: 'org.knowm', name: 'yank', version: '3.3.0'
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.0.0'
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.24'
+    compile 'com.opencsv:opencsv:3.9'
+    compile 'org.knowm:yank:3.3.0'
+    compile 'org.postgresql:postgresql:42.0.0'
+    compile 'org.slf4j:slf4j-simple:1.7.24'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
 
 
     // Use TestNG framework, also requires calling test.useTestNG() below
