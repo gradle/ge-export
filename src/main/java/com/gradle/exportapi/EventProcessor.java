@@ -24,6 +24,8 @@ class EventProcessor {
     // Maps to hold in-flight objects
     private final Map<String, Task> taskMap = new HashMap<>();
 
+    public final static String EVENT_TYPES="BuildStarted,Locality,BuildFinished,TaskStarted,TaskFinished";
+
 
     public EventProcessor(String buildId) {
         this.currentBuild = new Build( buildId );

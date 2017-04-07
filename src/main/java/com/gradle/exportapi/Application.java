@@ -130,7 +130,7 @@ final class Application {
         AtomicReference<String> _lastBuildEventId = new AtomicReference<>(null);
 
         HttpClientRequest<ByteBuf, ByteBuf> request = HTTP_CLIENT
-                .createGet("/build-export/v1/build/" + buildId + "/events")
+                .createGet("/build-export/v1/build/" + buildId + "/events?eventTypes=" + EventProcessor.EVENT_TYPES)
                 .setKeepAlive(true);
         if(BASIC_AUTH != null) {
             request = request.addHeader("Authorization", "Basic " + BASIC_AUTH);
