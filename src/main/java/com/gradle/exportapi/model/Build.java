@@ -13,6 +13,8 @@ public class Build {
     @Column("BUILD_ID")
     private String buildId;
 
+    private String userName;
+
     private final Timer timer = new Timer();
 
     public Build() {}
@@ -31,6 +33,14 @@ public class Build {
 
     public String getBuildId() {
         return buildId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public Timer getTimer() {

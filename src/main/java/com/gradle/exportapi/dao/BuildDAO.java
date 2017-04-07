@@ -26,7 +26,7 @@ public class BuildDAO {
 
     public static int updateBuild(Build build) {
         log.info("Updating build:" + build.getBuildId());
-        String sql = "UPDATE builds SET start =  ?, finish = ? WHERE build_id = '" + build.getBuildId() + "'";
+        String sql = "UPDATE builds SET user_name = ?, start =  ?, finish = ? WHERE build_id = '" + build.getBuildId() + "'";
 
         OffsetDateTime start = OffsetDateTime.ofInstant
                 (build.getTimer().getStartTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
@@ -34,7 +34,7 @@ public class BuildDAO {
         OffsetDateTime finish = OffsetDateTime.ofInstant
                 (build.getTimer().getStartTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
 
-        Object[] params = new Object[] { start, finish };
+        Object[] params = new Object[] { build.getUserName(), start, finish };
         return Yank.execute(sql, params);
     }
 
