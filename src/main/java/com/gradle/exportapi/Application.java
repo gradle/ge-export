@@ -34,7 +34,7 @@ final class Application {
             System.getProperty("server"), Integer.parseInt( System.getProperty("port","443")) );
 
     private static final HttpClient<ByteBuf, ByteBuf> HTTP_CLIENT = HttpClient.newClient(GRADLE_ENTERPRISE_SERVER).unsafeSecure();
-    private static final int THROTTLE = 5;
+    private static final Integer NUM_OF_STREAMS = Integer.valueOf(System.getProperty("num_of_streams","5"));
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
 
@@ -69,7 +69,7 @@ final class Application {
                                     eventProcessor.process(json);
                                     return eventProcessor;
                                 }),
-                        THROTTLE
+                        NUM_OF_STREAMS
                 )
 
                 .toBlocking()
