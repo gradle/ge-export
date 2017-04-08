@@ -20,7 +20,7 @@ public class TasksDAO {
 
         String SQL = insert("tasks (task_id, build_id, path, duration_millis, outcome)", params);
         long newId = Yank.insert(SQL, params);
-        log.info("Created task id: " + newId + " task: " + task.getPath() + " for build: " + task.getBuildId());
+        log.debug("Created task id: " + newId + " task: " + task.getPath() + " for build: " + task.getBuildId());
         return newId;
     }
 }

@@ -139,4 +139,11 @@ id: 39
         long newId = TasksDAO.insertTask(task);
         taskMap.remove(taskId);
     }
+
+    @Override
+    public String toString() {
+        return "EventProcessor{" +
+                "currentBuild=" + currentBuild +
+                '}';
+    }
 }
