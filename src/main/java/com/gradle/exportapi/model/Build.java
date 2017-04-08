@@ -15,6 +15,8 @@ public class Build {
 
     private String userName;
 
+    private String rootProjectName;
+
     private final Timer timer = new Timer();
 
     public Build() {}
@@ -41,6 +43,14 @@ public class Build {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getRootProjectName() {
+        return rootProjectName;
+    }
+
+    public void setRootProjectName(String rootProjectName) {
+        this.rootProjectName = rootProjectName;
     }
 
     public Timer getTimer() {

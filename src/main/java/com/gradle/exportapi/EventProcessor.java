@@ -24,7 +24,7 @@ class EventProcessor {
     // Maps to hold in-flight objects
     private final Map<String, Task> taskMap = new HashMap<>();
 
-    public final static String EVENT_TYPES="BuildStarted,BuildAgent,Locality,BuildFinished,TaskStarted,TaskFinished";
+    public final static String EVENT_TYPES="BuildStarted,BuildAgent,ProjectStructure,Locality,BuildFinished,TaskStarted,TaskFinished";
 
 
     public EventProcessor(String buildId) {
@@ -46,6 +46,9 @@ class EventProcessor {
             case "BuildAgent":
                 buildAgent(json);
                 break;
+            case "ProjectStructure":
+                projectStructure(json);
+                break;
             case "Locality":
                 locality(json);
                 break;
@@ -63,6 +66,10 @@ class EventProcessor {
 
     private void buildAgent(JsonNode json) {
         currentBuild.setUserName(json.get("data").get("username").asText());
+    }
+
+    private void projectStructure(JsonNode json) {
+        currentBuild.setRootProjectName(json.get("data").get("rootProjectName").asText());
     }
 
     private void locality(JsonNode json) {

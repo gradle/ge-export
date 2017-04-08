@@ -29,6 +29,7 @@ class CreateDB {
                 "   id                   bigserial PRIMARY KEY   NOT NULL,\n" +
                 "   build_id             text      NOT NULL,\n" +
                 "   user_name            text      ,\n" +
+                "   root_project_name    text      ,\n" +
                 "   start                timestamp with time zone,\n" +
                 "   finish               timestamp with time zone,\n" +
                 "   CONSTRAINT unique_build_id UNIQUE(build_id)\n" +
