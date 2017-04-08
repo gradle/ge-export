@@ -16,26 +16,25 @@ public class BuildDAO {
 
     public static long insertBuild(Build build) {
 
-        Object[] params = new Object[]{
-                build.getBuildId()
-        };
-
-        String SQL = insert("builds (build_id)", params);
-        return Yank.insert(SQL, params);
-    }
-
-    public static int updateBuild(Build build) {
-        log.info("Updating build:" + build.getBuildId());
-        String sql = "UPDATE builds SET user_name = ?, root_project_name = ?, start =  ?, finish = ? WHERE build_id = '" + build.getBuildId() + "'";
-
         OffsetDateTime start = OffsetDateTime.ofInstant
                 (build.getTimer().getStartTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
 
         OffsetDateTime finish = OffsetDateTime.ofInstant
                 (build.getTimer().getStartTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
 
-        Object[] params = new Object[] { build.getUserName(), build.getRootProjectName(), start, finish };
-        return Yank.execute(sql, params);
+        Object[] params = new Object[] {
+                build.getBuildId(),
+                build.getUserName(),
+                build.getRootProjectName(),
+                start,
+                finish };
+
+        String SQL = insert("builds (build_id, user_name, root_project_name, start, finish)", params);
+        Long generatedid= Yank.insert(SQL, params);
+        if(generatedid == 0) {
+            throw new RuntimeException("Unable to save build record for " + build.getBuildId());
+        }
+        return generatedid;
     }
 
     public static String findLastBuildId() {

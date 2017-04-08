@@ -2,6 +2,9 @@ package com.gradle.exportapi.model;
 
 import org.knowm.yank.annotations.Column;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Build {
 
     private long id;
@@ -18,6 +21,10 @@ public class Build {
     private String rootProjectName;
 
     private final Timer timer = new Timer();
+
+    public final Map<String, Task> taskMap = new HashMap<>();
+
+    public final Map<String, Test> testMap = new HashMap<>();
 
     public Build() {}
 

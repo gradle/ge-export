@@ -6,11 +6,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.gradle.exportapi.dao.TasksDAO;
 import com.gradle.exportapi.model.Build;
 import com.gradle.exportapi.model.Task;
+import com.gradle.exportapi.model.Test;
 import com.gradle.exportapi.model.Timer;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.gradle.exportapi.dao.BuildDAO.*;
 
@@ -21,18 +20,13 @@ class EventProcessor {
 
     private final Build currentBuild;
 
-    // Maps to hold in-flight objects
-    private final Map<String, Task> taskMap = new HashMap<>();
 
-    public final static String EVENT_TYPES="BuildStarted,BuildAgent,ProjectStructure,Locality,BuildFinished,TaskStarted,TaskFinished";
+    public final static String EVENT_TYPES="BuildStarted,BuildAgent,ProjectStructure,Locality,BuildFinished,TaskStarted,TaskFinished,TestStarted,TestFinished";
 
 
     public EventProcessor(String buildId) {
         this.currentBuild = new Build( buildId );
-        currentBuild.setId( insertBuild(currentBuild) );
-        if(currentBuild.getId() == 0) {
-            throw new RuntimeException("Unable to save build record for " + currentBuild.getBuildId());
-        }
+
         log.debug("DB-generated id: " + currentBuild.getId());
     }
 
@@ -61,6 +55,12 @@ class EventProcessor {
             case "TaskFinished":
                 taskFinished(json);
                 break;
+            case "TestStarted":
+                testStarted(json);
+                break;
+            case "TestFinished":
+                testFinished(json);
+                break;
         }
     }
 
@@ -84,8 +84,8 @@ class EventProcessor {
 
     private void buildFinished(JsonNode json) {
         currentBuild.getTimer().setFinishTime( Instant.ofEpochMilli( json.get("timestamp").asLong()) );
-        int affectedRows = updateBuild(currentBuild);
-        log.info("Updated " + affectedRows + " rows in builds table. Build: " + currentBuild.toString());
+
+
     }
 
     /*
@@ -99,7 +99,7 @@ data: {"timestamp":1488495221555,"type":{"majorVersion":1,"minorVersion":2,"even
         assert id != null;
         String taskId = id.asText();
 
-        assert taskMap.get(taskId) == null;
+        assert currentBuild.taskMap.get(taskId) == null;
 
         Task task = new Task();
         task.setTaskId(taskId);
@@ -108,7 +108,7 @@ data: {"timestamp":1488495221555,"type":{"majorVersion":1,"minorVersion":2,"even
         Timer timer = task.getTimer();
         timer.setStartTime( Instant.ofEpochMilli(json.get("timestamp").asLong()));
 
-        taskMap.put(taskId, task);
+        currentBuild.taskMap.put(taskId, task);
     }
 
     /*Example:
@@ -123,7 +123,7 @@ id: 39
         assert id != null;
         String taskId = id.asText();
 
-        Task task = taskMap.get(taskId);
+        Task task = currentBuild.taskMap.get(taskId);
         if(task == null) {
             throw new RuntimeException("Could not find task with id: " + taskId + " in the task map");
         }
@@ -135,10 +135,37 @@ id: 39
 
         task.setOutcome( json.get("data").get("outcome").asText());
 
-        // insert into DB
-        long newId = TasksDAO.insertTask(task);
-        taskMap.remove(taskId);
+
+
     }
+
+    private void testStarted(JsonNode json) {
+        JsonNode data = json.get("data");
+        JsonNode id = data.get("id");
+        assert id != null;
+        String testId = id.asText();
+
+        assert currentBuild.testMap.get(testId) == null;
+
+        Test test = new Test();
+        test.setTestId(testId);
+    }
+
+    private void testFinished(JsonNode json) {
+        JsonNode id = json.get("data").get("id");
+        assert id != null;
+        String testId = id.asText();
+    }
+
+    public static void persist(EventProcessor processor) {
+        Build currentBuild = processor.currentBuild;
+        currentBuild.setId( insertBuild(currentBuild) );
+
+        currentBuild.taskMap.values().stream().forEach( TasksDAO::insertTask );
+
+    }
+
+
 
     @Override
     public String toString() {

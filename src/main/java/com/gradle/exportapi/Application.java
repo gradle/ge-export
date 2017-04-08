@@ -77,7 +77,7 @@ final class Application {
 
                 .toBlocking()
                 .subscribe(
-                        System.out::println
+                        EventProcessor::persist
                 );
 
         Yank.releaseDefaultConnectionPool();
