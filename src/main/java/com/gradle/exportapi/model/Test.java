@@ -3,6 +3,7 @@ package com.gradle.exportapi.model;
 public class Test {
 
     private String testId;
+    private String buildId;
     private String taskId;
     private String name;
     private String className;
@@ -15,6 +16,14 @@ public class Test {
 
     public void setTestId(String testId) {
         this.testId = testId;
+    }
+
+    public String getBuildId() {
+        return buildId;
+    }
+
+    public void setBuildId(String buildId) {
+        this.buildId = buildId;
     }
 
     public String getTaskId() {
