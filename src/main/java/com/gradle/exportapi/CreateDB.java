@@ -45,6 +45,12 @@ class CreateDB {
                 "   CONSTRAINT unique_build_path UNIQUE(build_id,path)\n" +
                 ");");
 
+        createTableProps.put("CREATE_TESTS","CREATE TABLE tests(\n" +
+                "   id                   bigserial PRIMARY KEY   NOT NULL,\n" +
+                "   test_id              text      NOT NULL,\n" +
+                "   task_id              text      NOT NULL,\n" +
+                ");");
+
 
         Yank.addSQLStatements(createTableProps);
 
