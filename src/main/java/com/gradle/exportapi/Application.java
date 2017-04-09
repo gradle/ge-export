@@ -147,7 +147,7 @@ final class Application {
                 .filter(serverSentEvent -> serverSentEvent.getEventTypeAsString().equals("BuildEvent"))
                 .map(Application::parse)
                 .onErrorResumeNext(t -> {
-                    log.info("Error streaming build events, resuming from " + _lastBuildEventId.get() + "...");
+                    log.info("Error streaming build events of build " + buildId + ", resuming from event id" + _lastBuildEventId.get() + "...");
                     return buildEventStream(buildId, _lastBuildEventId.get());
                 });
     }
