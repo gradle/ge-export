@@ -42,45 +42,45 @@ final class Application {
 
 
     public static void main(String[] args) throws Exception {
+        try {
+            Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
+            Yank.setupDefaultConnectionPool(dbProps);
 
-        Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
-        Yank.setupDefaultConnectionPool(dbProps);
+            if( System.getProperty("createDb") != null) {
+                CreateDB.run();
+            }
 
-        if( System.getProperty("createDb") != null) {
-            CreateDB.run();
-        }
+            String hoursStr = System.getProperty("hours");
 
-        String hoursStr = System.getProperty("hours");
+            Instant since;
+            // default to 24hs
+            if(hoursStr == null) {
+                since = now().minus(Duration.ofHours( Integer.parseInt("24")));
+            }
+            else if(hoursStr.equals("all")) {
+                since = Instant.EPOCH;
+                log.info("Calculating for all stored build scans");
+            } else {
+                since = now().minus(Duration.ofHours( Integer.parseInt(hoursStr)));
+            }
 
-        Instant since;
-        // default to 24hs
-        if(hoursStr == null) {
-            since = now().minus(Duration.ofHours( Integer.parseInt("24")));
-        }
-        else if(hoursStr.equals("all")) {
-            since = Instant.EPOCH;
-            log.info("Calculating for all stored build scans");
-        } else {
-            since = now().minus(Duration.ofHours( Integer.parseInt(hoursStr)));
-        }
-
-
-
-        buildIdStream(since)
+            buildIdStream(since)
                 .flatMap(buildId -> buildEventStream(buildId)
-                                .reduce(new EventProcessor(buildId), (eventProcessor, json) -> {
-                                    eventProcessor.process(json);
-                                    return eventProcessor;
-                                }),
-                        NUM_OF_STREAMS
+                    .reduce(new EventProcessor(buildId), (eventProcessor, json) -> {
+                        eventProcessor.process(json);
+                        return eventProcessor;
+                    }),
+                    NUM_OF_STREAMS
                 )
-
                 .toBlocking()
                 .subscribe(
-                        EventProcessor::persist
+                    EventProcessor::persist
                 );
 
-        Yank.releaseDefaultConnectionPool();
+            Yank.releaseDefaultConnectionPool();
+        } catch (Exception e) {
+            log.error("Export failed ", e);
+        }
     }
 
     private static Observable<String> buildIdStream(Instant since) {
