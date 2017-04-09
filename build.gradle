@@ -18,15 +18,12 @@ dependencies {
     compile 'com.opencsv:opencsv:3.9'
     compile 'org.knowm:yank:3.3.0'
     compile 'org.postgresql:postgresql:42.0.0'
-    compile 'org.slf4j:slf4j-simple:1.7.24'
     compile 'ch.qos.logback:logback-classic:1.2.3'
-
 
     // Use TestNG framework, also requires calling test.useTestNG() below
     testCompile 'org.testng:testng:6.10'
 }
 
-//noinspection GroovyUnusedAssignment
 mainClassName = 'com.gradle.exportapi.Application'
 
 run {
@@ -35,5 +32,3 @@ run {
 }
 
 test.useTestNG()
-
-
