@@ -24,6 +24,8 @@ select b.build_id, b.start from builds b, tasks t where b.build_id = t.build_id 
 
 -Dbasic_auth - base64 encoded username:password
 
+-Dnum_of_streams - number of build event streams to process in parallel (defaults to 5)
+
 ## Setup
 
 To run this sample:
