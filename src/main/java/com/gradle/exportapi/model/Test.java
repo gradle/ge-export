@@ -57,4 +57,8 @@ public class Test {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public Timer getTimer() {
+        return timer;
+    }
 }

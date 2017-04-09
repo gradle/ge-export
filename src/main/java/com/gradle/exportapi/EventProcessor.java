@@ -1,5 +1,6 @@
 package com.gradle.exportapi;
 
+import com.gradle.exportapi.dao.TestsDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -134,13 +135,22 @@ id: 39
         timer.setFinishTime( Instant.ofEpochMilli(timestamp.asLong()) );
 
         task.setOutcome( json.get("data").get("outcome").asText());
-
-
-
     }
+
+    /*
+    'id: 7617
+event: BuildEvent
+data: {"timestamp":1491615403001,"type":{"majorVersion":1,"minorVersion":0,"eventType":"TestStarted"},
+"data":{"task":4032790360760717493,"id":-1963500554409017618,"parent":3512790051736469310,"name":"verifyOk",
+"className":"org.apereo.cas.support.pac4j.authentication.handler.support.ClientAuthenticationHandlerTests","suite":false}}
+     */
 
     private void testStarted(JsonNode json) {
         JsonNode data = json.get("data");
+
+        //for now, skip suites
+        if(data.get("suite").asBoolean()) return;
+
         JsonNode id = data.get("id");
         assert id != null;
         String testId = id.asText();
@@ -148,15 +158,37 @@ id: 39
         assert currentBuild.testMap.get(testId) == null;
 
         Test test = new Test();
+        test.setBuildId(currentBuild.getBuildId());
+        test.setTaskId(data.get("task").asText());
         test.setTestId(data.get("id").asText());
+        test.setName(data.get("name").asText());
+        test.setClassName(data.get("className").asText());
+
+        Timer timer = test.getTimer();
+        timer.setStartTime( Instant.ofEpochMilli(json.get("timestamp").asLong()));
+
+        currentBuild.testMap.put(test.getTestId(), test);
     }
 
+    /*
+    id: 7618
+event: BuildEvent
+data: {"timestamp":1491615409161,"type":{"majorVersion":1,"minorVersion":0,"eventType":"TestFinished"},"data":{"task":4032790360760717493,"id":-1963500554409017618,
+"failed":false,"skipped":false,"failure":null}}
+     */
     private void testFinished(JsonNode json) {
         JsonNode data = json.get("data");
-        JsonNode id = data.get("id");
-        assert id != null;
-        String testId = id.asText();
+        String testId = data.get("id").asText();
+        assert testId != null;
+        Test test = currentBuild.testMap.get(testId);
 
+        if(test == null) return;
+
+        boolean failed = data.get("failed").asBoolean();
+        boolean skipped = data.get("skipped").asBoolean();
+        test.setStatus( skipped ? "skipped" : failed ? "failed" : "success");
+        Timer timer = test.getTimer();
+        timer.setFinishTime( Instant.ofEpochMilli(json.get("timestamp").asLong()) );
     }
 
     public static void persist(EventProcessor processor) {
@@ -164,7 +196,7 @@ id: 39
         currentBuild.setId( insertBuild(currentBuild) );
 
         currentBuild.taskMap.values().stream().forEach( TasksDAO::insertTask );
-
+        currentBuild.testMap.values().stream().forEach(TestsDAO::insertTest);
     }
 
 
