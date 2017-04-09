@@ -13,9 +13,8 @@ buildScan {
 }
 
 dependencies {
-    compile 'io.reactivex:rxnetty-http:0.5.2-rc.5'
+    compile 'io.reactivex:rxnetty-http:0.5.2'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.2'
-    compile 'io.reactivex:rxjava-math:1.0.0'
     compile 'com.opencsv:opencsv:3.9'
     compile 'org.knowm:yank:3.3.0'
     compile 'org.postgresql:postgresql:42.0.0'

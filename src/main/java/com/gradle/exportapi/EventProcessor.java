@@ -148,13 +148,15 @@ id: 39
         assert currentBuild.testMap.get(testId) == null;
 
         Test test = new Test();
-        test.setTestId(testId);
+        test.setTestId(data.get("id").asText());
     }
 
     private void testFinished(JsonNode json) {
-        JsonNode id = json.get("data").get("id");
+        JsonNode data = json.get("data");
+        JsonNode id = data.get("id");
         assert id != null;
         String testId = id.asText();
+
     }
 
     public static void persist(EventProcessor processor) {

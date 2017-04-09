@@ -48,13 +48,13 @@ class CreateDB {
 
         createTableProps.put("CREATE_TESTS","CREATE TABLE tests(\n" +
                 "   id                   bigserial PRIMARY KEY   NOT NULL,\n" +
-                "   test_id              text      NOT NULL,\n" +
+                "   build_id             text      NOT NULL,\n" +
                 "   task_id              text      NOT NULL,\n" +
+                "   test_id              text      NOT NULL,\n" +
                 "   name                 text      NOT NULL,\n" +
                 "   class_name           text      NOT NULL,\n" +
                 "   status               text      NOT NULL,\n" +
-                "   start                timestamp with time zone,\n" +
-                "   finish               timestamp with time zone,\n" +
+                "   duration_millis      int       NOT NULL\n" +
                 ");");
 
         /*
@@ -70,13 +70,14 @@ class CreateDB {
 
         // create tables
 
-        //Yank.executeSQLKey("DROP_TESTS", null);
+        Yank.executeSQLKey("DROP_TESTS", null);
         Yank.executeSQLKey("DROP_TASKS", null);
         Yank.executeSQLKey("DROP_BUILDS", null);
 
 
         Yank.executeSQLKey("CREATE_BUILDS", null);
         Yank.executeSQLKey("CREATE_TASKS", null);
+        Yank.executeSQLKey("CREATE_TESTS", null);
 
 
     }
