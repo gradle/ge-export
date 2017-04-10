@@ -11,11 +11,19 @@ public class TasksDAO {
     static final Logger log = LoggerFactory.getLogger(TasksDAO.class);
 
     public static long insertTask(Task task) {
+        // If the task executor crashed, checking its duration may result in an NPE
+        long duration = 0;
+        try {
+            duration = task.getTimer().durationInMillis();
+        } catch (Exception e) {
+            log.warn("Failed to get duration of task " + task.getPath() + " for build " + task.getBuildId(), e);
+        }
+
         Object[] params = new Object[] {
                 task.getBuildId(),
                 task.getTaskId(),
                 task.getPath(),
-                task.getTimer().durationInMillis(),
+                duration,
                 task.getOutcome()};
 
         String SQL = insert("tasks (build_id, task_id, path, duration_millis, outcome)", params);
