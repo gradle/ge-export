@@ -106,6 +106,7 @@ data: {"timestamp":1488495221555,"type":{"majorVersion":1,"minorVersion":2,"even
         task.setTaskId(taskId);
         task.setBuildId(this.currentBuild.getBuildId());
         task.setPath(data.get("path").asText());
+        task.setType(data.get("className").asText());
         Timer timer = task.getTimer();
         timer.setStartTime( Instant.ofEpochMilli(json.get("timestamp").asLong()));
 
