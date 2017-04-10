@@ -12,18 +12,13 @@ public class TestsDAO {
     static final Logger log = LoggerFactory.getLogger(TestsDAO.class);
 
     public static long insertTest(Test test) {
-
-        // If the task executor crashed, checking its duration may result in an NPE
-        long duration = 0;
         try {
-            duration = test.getTimer().durationInMillis();
+            test.durationInMillis();
         } catch (Exception e) {
-            log.warn("Failed to get duration of test " + test.getName() + " in build " + test.getBuildId() +
-                     ", recording its duration as " + duration);
+            log.error("Failed to get duration of test. This should never happen. " + test.getName() + " in build " + test.getBuildId());
             log.debug("test " + test.getName() + " in build " + test.getBuildId(), e);
         }
 
-        // If the task executor crashed, its status may be null
         if(test.getStatus() == null) {
             log.warn("Test " + test.getName() + " for build " + test.getBuildId() + " has no value for status, " +
                      "recording its status as 'error'");
@@ -37,7 +32,7 @@ public class TestsDAO {
                 test.getName(),
                 test.getClassName(),
                 test.getStatus(),
-                duration
+                test.durationInMillis()
         };
 
         String SQL = insert("tests (build_id, task_id, test_id, name, class_name, status, duration_millis)", params);

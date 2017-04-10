@@ -64,15 +64,18 @@ public class Test {
     }
 
     public long durationInMillis() {
+        if(timer.getStartTime() == null) {
+            throw new RuntimeException("Missing start time. We don't think this should ever happen. Build Id: " + buildId + " Task id: " + taskId + " Test id: " + testId);
+        }
         if(timer.getFinishTime() == null) {
             log.warn("Finished time is missing for " + "Build Id: " + buildId + " Task id: " + taskId + " Test id: " + testId);
+            // for now, if finish is missing set it to start time
+            timer.setFinishTime( timer.getStartTime() );
+            this.setStatus("missing_finish");
         }
-        try {
-            return timer.durationInMillis();
-        } catch (Exception e) {
-            throw new RuntimeException("Build Id: " + buildId + " Task id: " + taskId + " Test id: " + testId,e);
-        }
+        return timer.durationInMillis();
     }
+
     public Timer getTimer() {
         return timer;
     }
