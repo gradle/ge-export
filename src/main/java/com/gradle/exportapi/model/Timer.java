@@ -41,7 +41,9 @@ public class Timer {
         return durationInMillis() / 1000;
     }
 
-    public long durationInMillis() { return Duration.between(startTime, finishTime).toMillis(); }
+    public long durationInMillis() {
+        return Duration.between(startTime, finishTime).toMillis();
+    }
 
     @Override
     public String toString() {

@@ -19,7 +19,7 @@ public class TestsDAO {
             duration = test.getTimer().durationInMillis();
         } catch (Exception e) {
             log.warn("Failed to get duration of test " + test.getName() + " in build " + test.getBuildId() +
-                     ", setting its duration to " + duration);
+                     ", recording its duration as " + duration);
             log.debug("test " + test.getName() + " in build " + test.getBuildId(), e);
         }
 
@@ -37,12 +37,12 @@ public class TestsDAO {
                 test.getName(),
                 test.getClassName(),
                 test.getStatus(),
-                duration,
+                duration
         };
 
         String SQL = insert("tests (build_id, task_id, test_id, name, class_name, status, duration_millis)", params);
         long newId = Yank.insert(SQL, params);
-        log.debug("Created test id: " + newId + " test: " + test.getName() + " for build: " + test.getBuildId());
+        log.info("Created test id: " + newId + " test: " + test.getName() + " for build: " + test.getBuildId());
         return newId;
     }
 }

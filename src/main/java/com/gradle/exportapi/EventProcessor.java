@@ -167,7 +167,7 @@ data: {"timestamp":1491615403001,"type":{"majorVersion":1,"minorVersion":0,"even
         Timer timer = test.getTimer();
         timer.setStartTime( Instant.ofEpochMilli(json.get("timestamp").asLong()));
 
-        currentBuild.testMap.put(test.getTestId(), test);
+        currentBuild.testMap.put(test.getTaskId()+":"+test.getTestId(), test);
     }
 
     /*
@@ -178,9 +178,11 @@ data: {"timestamp":1491615409161,"type":{"majorVersion":1,"minorVersion":0,"even
      */
     private void testFinished(JsonNode json) {
         JsonNode data = json.get("data");
+        String taskId = data.get("task").asText();
         String testId = data.get("id").asText();
+        assert taskId != null;
         assert testId != null;
-        Test test = currentBuild.testMap.get(testId);
+        Test test = currentBuild.testMap.get(taskId+":"+testId);
 
         if(test == null) return;
 
@@ -196,7 +198,10 @@ data: {"timestamp":1491615409161,"type":{"majorVersion":1,"minorVersion":0,"even
         currentBuild.setId( insertBuild(currentBuild) );
 
         currentBuild.taskMap.values().stream().forEach( TasksDAO::insertTask );
-        currentBuild.testMap.values().stream().forEach(TestsDAO::insertTest);
+        if(System.getProperty("export_tests") != null) {
+            currentBuild.testMap.values().stream().forEach(TestsDAO::insertTest);
+        }
+
     }
 
 

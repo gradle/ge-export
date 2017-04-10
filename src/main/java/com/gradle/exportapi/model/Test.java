@@ -1,6 +1,11 @@
 package com.gradle.exportapi.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Test {
+
+    public static final Logger log = LoggerFactory.getLogger(Test.class);
 
     private String testId;
     private String buildId;
@@ -58,6 +63,16 @@ public class Test {
         this.status = status;
     }
 
+    public long durationInMillis() {
+        if(timer.getFinishTime() == null) {
+            log.warn("Finished time is missing for " + "Build Id: " + buildId + " Task id: " + taskId + " Test id: " + testId);
+        }
+        try {
+            return timer.durationInMillis();
+        } catch (Exception e) {
+            throw new RuntimeException("Build Id: " + buildId + " Task id: " + taskId + " Test id: " + testId,e);
+        }
+    }
     public Timer getTimer() {
         return timer;
     }
