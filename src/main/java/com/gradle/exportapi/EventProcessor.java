@@ -198,7 +198,10 @@ data: {"timestamp":1491615409161,"type":{"majorVersion":1,"minorVersion":0,"even
         currentBuild.setId( insertBuild(currentBuild) );
 
         currentBuild.taskMap.values().stream().forEach( TasksDAO::insertTask );
-        currentBuild.testMap.values().stream().forEach(TestsDAO::insertTest);
+        if(System.getProperty("export_tests") != null) {
+            currentBuild.testMap.values().stream().forEach(TestsDAO::insertTest);
+        }
+
     }
 
 
