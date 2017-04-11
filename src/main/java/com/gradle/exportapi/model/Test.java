@@ -71,7 +71,7 @@ public class Test {
             log.warn("Finished time is missing for " + "Build Id: " + buildId + " Task id: " + taskId + " Test id: " + testId);
             // for now, if finish is missing set it to start time
             timer.setFinishTime( timer.getStartTime() );
-            this.setStatus("missing_finish");
+            this.setStatus("interrupted");
         }
         return timer.durationInMillis();
     }
