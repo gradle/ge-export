@@ -37,7 +37,7 @@ public class TestsDAO {
 
         String SQL = insert("tests (build_id, task_id, test_id, name, class_name, status, duration_millis)", params);
         long newId = Yank.insert(SQL, params);
-        log.info("Created test id: " + newId + " test: " + test.getName() + " for build: " + test.getBuildId());
+        log.debug("Created test id: " + newId + " test: " + test.getName() + " for build: " + test.getBuildId());
         return newId;
     }
 }

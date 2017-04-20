@@ -27,9 +27,10 @@ public class BuildDAO {
                 build.getUserName(),
                 build.getRootProjectName(),
                 start,
-                finish };
+                finish,
+                build.getStatus()};
 
-        String SQL = insert("builds (build_id, user_name, root_project_name, start, finish)", params);
+        String SQL = insert("builds (build_id, user_name, root_project_name, start, finish, status)", params);
         Long generatedid= Yank.insert(SQL, params);
         if(generatedid == 0) {
             throw new RuntimeException("Unable to save build record for " + build.getBuildId());

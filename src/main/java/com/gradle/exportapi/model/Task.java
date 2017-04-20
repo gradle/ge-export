@@ -45,6 +45,8 @@ public class Task {
         return timer;
     }
 
+    public void resolveStatus() { /*NO-OP*/ }
+
     @Override
     public String toString() {
         return "Task {" +
@@ -56,4 +58,6 @@ public class Task {
                 ", outcome=" + outcome +
                 " }";
     }
+
+
 }

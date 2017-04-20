@@ -196,10 +196,12 @@ data: {"timestamp":1491615409161,"type":{"majorVersion":1,"minorVersion":0,"even
 
     public static void persist(EventProcessor processor) {
         Build currentBuild = processor.currentBuild;
+        currentBuild.resolveStatus();
+
         currentBuild.setId( insertBuild(currentBuild) );
 
         currentBuild.taskMap.values().stream().forEach( TasksDAO::insertTask );
-        currentBuild.testMap.values().stream().forEach(TestsDAO::insertTest);
+        currentBuild.testMap.values().stream().forEach( TestsDAO::insertTest );
     }
 
 

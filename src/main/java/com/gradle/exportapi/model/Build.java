@@ -22,6 +22,8 @@ public class Build {
 
     private final Timer timer = new Timer();
 
+    private String status;
+
     public final Map<String, Task> taskMap = new HashMap<>();
 
     public final Map<String, Test> testMap = new HashMap<>();
@@ -29,7 +31,9 @@ public class Build {
     public Build() {}
 
     public Build(String buildId) {
+
         this.buildId = buildId;
+        this.status = "finished";
     }
 
     public long getId() {
@@ -60,8 +64,22 @@ public class Build {
         this.rootProjectName = rootProjectName;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public Timer getTimer() {
         return timer;
+    }
+
+    public void resolveStatus() {
+        taskMap.values().forEach( task -> task.resolveStatus() );
+        testMap.values().forEach( test -> test.resolveStatus() );
+        if(testMap.values().stream().anyMatch( test -> test.isInterrupted()) ) setStatus("interrupted");
     }
 
     @Override
@@ -72,6 +90,7 @@ public class Build {
                 ", timer=" + timer +
                 '}';
     }
+
 
 
 }

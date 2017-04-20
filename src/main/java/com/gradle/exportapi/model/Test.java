@@ -12,7 +12,7 @@ public class Test {
     private String taskId;
     private String name;
     private String className;
-    private String status; //success failure skipped
+    private String status = "none"; //success failure skipped interrupted
     private final Timer timer = new Timer();
 
     public String getTestId() {
@@ -63,7 +63,7 @@ public class Test {
         this.status = status;
     }
 
-    public long durationInMillis() {
+    public void resolveStatus() {
         if(timer.getStartTime() == null) {
             throw new RuntimeException("Missing start time. We don't think this should ever happen. Build Id: " + buildId + " Task id: " + taskId + " Test id: " + testId);
         }
@@ -73,10 +73,20 @@ public class Test {
             timer.setFinishTime( timer.getStartTime() );
             this.setStatus("interrupted");
         }
+    }
+
+    public boolean isInterrupted() {
+        return status.equals("interrupted");
+    }
+
+    public long durationInMillis() {
+        if(status.equals("none")) throw new RuntimeException("resolveStatus() must be called before duration can be calculated");
         return timer.durationInMillis();
     }
 
     public Timer getTimer() {
         return timer;
     }
+
+
 }

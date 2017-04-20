@@ -33,6 +33,7 @@ class CreateDB {
                 "   root_project_name    text      NOT NULL,\n" +
                 "   start                timestamp with time zone NOT NULL,\n" +
                 "   finish               timestamp with time zone NOT NULL,\n" +
+                "   status               text      NOT NULL,\n" +
                 "   CONSTRAINT unique_build_id UNIQUE(build_id)\n" +
                 ");");
 
