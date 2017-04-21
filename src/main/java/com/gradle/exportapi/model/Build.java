@@ -24,7 +24,7 @@ public class Build {
 
     private String status;
 
-    public final Map<String, Task> taskMap = new HashMap<>();
+    public final Map<Long, Task> taskMap = new HashMap<>();
 
     public final Map<String, Test> testMap = new HashMap<>();
 

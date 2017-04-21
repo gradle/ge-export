@@ -7,19 +7,19 @@ public class Test {
 
     public static final Logger log = LoggerFactory.getLogger(Test.class);
 
-    private String testId;
+    private Long testId;
     private String buildId;
-    private String taskId;
+    private Long taskId;
     private String name;
     private String className;
     private String status = "none"; //success failure skipped interrupted
     private final Timer timer = new Timer();
 
-    public String getTestId() {
+    public Long getTestId() {
         return testId;
     }
 
-    public void setTestId(String testId) {
+    public void setTestId(Long testId) {
         this.testId = testId;
     }
 
@@ -31,11 +31,11 @@ public class Test {
         this.buildId = buildId;
     }
 
-    public String getTaskId() {
+    public Long getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(String taskId) {
+    public void setTaskId(Long taskId) {
         this.taskId = taskId;
     }
 

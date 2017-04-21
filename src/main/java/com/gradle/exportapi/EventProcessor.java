@@ -98,7 +98,7 @@ data: {"timestamp":1488495221555,"type":{"majorVersion":1,"minorVersion":2,"even
         JsonNode data = json.get("data");
         JsonNode id = data.get("id");
         assert id != null;
-        String taskId = id.asText();
+        Long taskId = id.asLong();
 
         assert currentBuild.taskMap.get(taskId) == null;
 
@@ -123,7 +123,7 @@ id: 39
     private void taskFinished(JsonNode json) {
         JsonNode id = json.get("data").get("id");
         assert id != null;
-        String taskId = id.asText();
+        Long taskId = id.asLong();
 
         Task task = currentBuild.taskMap.get(taskId);
         if(task == null) {
@@ -160,8 +160,8 @@ data: {"timestamp":1491615403001,"type":{"majorVersion":1,"minorVersion":0,"even
 
         Test test = new Test();
         test.setBuildId(currentBuild.getBuildId());
-        test.setTaskId(data.get("task").asText());
-        test.setTestId(data.get("id").asText());
+        test.setTaskId(data.get("task").asLong());
+        test.setTestId(data.get("id").asLong());
         test.setName(data.get("name").asText());
         test.setClassName(data.get("className").asText());
 

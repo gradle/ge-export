@@ -40,7 +40,7 @@ class CreateDB {
         createTableProps.put("CREATE_TASKS","CREATE TABLE tasks(\n" +
                 "   id                   bigserial PRIMARY KEY   NOT NULL,\n" +
                 "   build_id             text      NOT NULL references builds(build_id) ON DELETE CASCADE,\n" +
-                "   task_id              text      NOT NULL,\n" +
+                "   task_id              bigint      NOT NULL,\n" +
                 "   path                 text      NOT NULL,\n" +
                 "   type                 text      NOT NULL,\n" +
                 "   duration_millis      int       NOT NULL,\n" +
@@ -51,8 +51,8 @@ class CreateDB {
         createTableProps.put("CREATE_TESTS","CREATE TABLE tests(\n" +
                 "   id                   bigserial PRIMARY KEY   NOT NULL,\n" +
                 "   build_id             text      NOT NULL references builds(build_id) ON DELETE CASCADE,\n" +
-                "   task_id              text      NOT NULL,\n" +
-                "   test_id              text      NOT NULL,\n" +
+                "   task_id              bigint      NOT NULL,\n" +
+                "   test_id              bigint      NOT NULL,\n" +
                 "   name                 text      NOT NULL,\n" +
                 "   class_name           text      NOT NULL,\n" +
                 "   status               text      NOT NULL,\n" +

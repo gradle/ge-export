@@ -1,7 +1,7 @@
 package com.gradle.exportapi.model;
 
 public class Task {
-    private String taskId;
+    private Long taskId;
     private String buildId;
     private String path;
     private String type;
@@ -15,10 +15,10 @@ public class Task {
         this.outcome = outcome;
     }
 
-    public String getTaskId() {
+    public Long getTaskId() {
         return taskId;
     }
-    public void setTaskId(String taskId) {
+    public void setTaskId(Long taskId) {
         this.taskId = taskId;
     }
 
