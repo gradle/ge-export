@@ -9,10 +9,6 @@ public class Build {
 
     private long id;
 
-    public void setBuildId(String buildId) {
-        this.buildId = buildId;
-    }
-
     @Column("BUILD_ID")
     private String buildId;
 

@@ -25,6 +25,7 @@ class CreateDB {
         createTableProps.put("DROP_BUILDS", "DROP TABLE IF EXISTS builds");
         createTableProps.put("DROP_TASKS", "DROP TABLE IF EXISTS tasks");
         createTableProps.put("DROP_TESTS", "DROP TABLE IF EXISTS tests");
+        createTableProps.put("DROP_CUSTOM_VALUES", "DROP TABLE IF EXISTS custom_values");
 
         createTableProps.put("CREATE_BUILDS","CREATE TABLE builds(\n" +
                 "   id                   bigserial PRIMARY KEY   NOT NULL,\n" +
@@ -60,8 +61,16 @@ class CreateDB {
                 "   CONSTRAINT unique_test UNIQUE(build_id,task_id,test_id)\n" +
                 ");");
 
+        createTableProps.put("CREATE_CUSTOM_VALUES","CREATE TABLE custom_values(\n" +
+                "   id                   bigserial PRIMARY KEY   NOT NULL,\n" +
+                "   build_id             text      NOT NULL references builds(build_id) ON DELETE CASCADE,\n" +
+                "   key                  text      NOT NULL,\n" +
+                "   value                text      NOT NULL\n" +
+                ");");
+
         Yank.addSQLStatements(createTableProps);
 
+        Yank.executeSQLKey("DROP_CUSTOM_VALUES", null);
         Yank.executeSQLKey("DROP_TESTS", null);
         Yank.executeSQLKey("DROP_TASKS", null);
         Yank.executeSQLKey("DROP_BUILDS", null);
@@ -69,5 +78,6 @@ class CreateDB {
         Yank.executeSQLKey("CREATE_BUILDS", null);
         Yank.executeSQLKey("CREATE_TASKS", null);
         Yank.executeSQLKey("CREATE_TESTS", null);
+        Yank.executeSQLKey("CREATE_CUSTOM_VALUES", null);
     }
 }

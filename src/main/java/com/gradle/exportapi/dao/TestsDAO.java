@@ -12,12 +12,6 @@ public class TestsDAO {
     static final Logger log = LoggerFactory.getLogger(TestsDAO.class);
 
     public static long insertTest(Test test) {
-        try {
-            test.durationInMillis();
-        } catch (Exception e) {
-            log.error("Failed to get duration of test. This should never happen. " + test.getName() + " in build " + test.getBuildId());
-            log.debug("test " + test.getName() + " in build " + test.getBuildId(), e);
-        }
 
         if(test.getStatus() == null) {
             log.warn("Test " + test.getName() + " for build " + test.getBuildId() + " has no value for status, " +
