@@ -1,14 +1,12 @@
 package com.gradle.exportapi;
 
+import com.gradle.exportapi.dao.CustomValueDAO;
 import com.gradle.exportapi.dao.TestsDAO;
+import com.gradle.exportapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.gradle.exportapi.dao.TasksDAO;
-import com.gradle.exportapi.model.Build;
-import com.gradle.exportapi.model.Task;
-import com.gradle.exportapi.model.Test;
-import com.gradle.exportapi.model.Timer;
 
 import java.time.Instant;
 
@@ -22,7 +20,7 @@ class EventProcessor {
     private final Build currentBuild;
 
 
-    public final static String EVENT_TYPES="BuildStarted,BuildAgent,ProjectStructure,Locality,BuildFinished,TaskStarted,TaskFinished,TestStarted,TestFinished";
+    public final static String EVENT_TYPES="BuildStarted,BuildAgent,ProjectStructure,Locality,BuildFinished,TaskStarted,TaskFinished,TestStarted,TestFinished,UserNamedValue";
 
 
     public EventProcessor(String buildId) {
@@ -62,8 +60,13 @@ class EventProcessor {
             case "TestFinished":
                 testFinished(json);
                 break;
+            case "UserNamedValue":
+                customValue(json);
+                break;
         }
     }
+
+
 
     private void buildAgent(JsonNode json) {
         currentBuild.setUserName(json.get("data").get("username").asText());
@@ -194,6 +197,15 @@ data: {"timestamp":1491615409161,"type":{"majorVersion":1,"minorVersion":0,"even
         timer.setFinishTime( Instant.ofEpochMilli(json.get("timestamp").asLong()) );
     }
 
+    private void customValue(JsonNode json) {
+        JsonNode data = json.get("data");
+        CustomValue cv = new CustomValue();
+        cv.setBuildId(currentBuild.getBuildId());
+        cv.setKey(data.get("key").asText());
+        cv.setValue(data.get("value").asText());
+        currentBuild.customValues.add(cv);
+    }
+
     public static void persist(EventProcessor processor) {
         Build currentBuild = processor.currentBuild;
         currentBuild.resolveStatus();
@@ -202,6 +214,7 @@ data: {"timestamp":1491615409161,"type":{"majorVersion":1,"minorVersion":0,"even
 
         currentBuild.taskMap.values().stream().forEach( TasksDAO::insertTask );
         currentBuild.testMap.values().stream().forEach( TestsDAO::insertTest );
+        currentBuild.customValues.stream().forEach(CustomValueDAO::insertCustomValue);
     }
 
 

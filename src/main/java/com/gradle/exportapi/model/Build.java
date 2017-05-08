@@ -2,8 +2,7 @@ package com.gradle.exportapi.model;
 
 import org.knowm.yank.annotations.Column;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Build {
 
@@ -23,6 +22,8 @@ public class Build {
     public final Map<Long, Task> taskMap = new HashMap<>();
 
     public final Map<String, Test> testMap = new HashMap<>();
+
+    public final List<CustomValue> customValues = new ArrayList<>();
 
     public Build() {}
 
