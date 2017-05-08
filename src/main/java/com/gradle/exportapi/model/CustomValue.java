@@ -2,6 +2,12 @@ package com.gradle.exportapi.model;
 
 
 public class CustomValue {
+
+    private long id;
+    private String buildId;
+    private String key;
+    private String value;
+
     public long getId() {
         return id;
     }
@@ -34,10 +40,7 @@ public class CustomValue {
         this.value = value;
     }
 
-    private long id;
-    private String buildId;
-    private String key;
-    private String value;
+
 
     @Override
     public String toString() {

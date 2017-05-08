@@ -3,6 +3,7 @@ package com.gradle.exportapi.model;
 import org.knowm.yank.annotations.Column;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Build {
 
@@ -24,6 +25,8 @@ public class Build {
     public final Map<String, Test> testMap = new HashMap<>();
 
     public final List<CustomValue> customValues = new ArrayList<>();
+
+    public final List<String> tags = new ArrayList<>();
 
     public Build() {}
 
@@ -79,6 +82,10 @@ public class Build {
         if(testMap.values().stream().anyMatch( test -> test.isInterrupted()) ) setStatus("interrupted");
     }
 
+    public String getTagsAsSingleString() {
+        return tags.stream().collect(Collectors.joining(","));
+    }
+
     @Override
     public String toString() {
         return "Build{" +
@@ -87,7 +94,6 @@ public class Build {
                 ", timer=" + timer +
                 '}';
     }
-
 
 
 }

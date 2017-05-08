@@ -20,7 +20,7 @@ class EventProcessor {
     private final Build currentBuild;
 
 
-    public final static String EVENT_TYPES="BuildStarted,BuildAgent,ProjectStructure,Locality,BuildFinished,TaskStarted,TaskFinished,TestStarted,TestFinished,UserNamedValue";
+    public final static String EVENT_TYPES="BuildStarted,BuildAgent,ProjectStructure,Locality,BuildFinished,TaskStarted,TaskFinished,TestStarted,TestFinished,UserTag,UserNamedValue";
 
 
     public EventProcessor(String buildId) {
@@ -58,7 +58,10 @@ class EventProcessor {
                 testStarted(json);
                 break;
             case "TestFinished":
-                testFinished(json);
+                testFinished(json); //
+                break;
+            case "UserTag":
+                tags(json);
                 break;
             case "UserNamedValue":
                 customValue(json);
@@ -195,6 +198,11 @@ data: {"timestamp":1491615409161,"type":{"majorVersion":1,"minorVersion":0,"even
         test.setStatus( skipped ? "skipped" : failed ? "failed" : "success");
         Timer timer = test.getTimer();
         timer.setFinishTime( Instant.ofEpochMilli(json.get("timestamp").asLong()) );
+    }
+
+    private void tags(JsonNode json) {
+        JsonNode data = json.get("data");
+        currentBuild.tags.add(data.get("tag").asText());
     }
 
     private void customValue(JsonNode json) {
