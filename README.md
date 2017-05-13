@@ -14,7 +14,7 @@ select b.build_id, b.start from builds b, tasks t where b.build_id = t.build_id 
 
 ## Parameters:
 
--Dserver - Gradle Enterprise server name (assumes https on port 443)
+-Dserver - Gradle Enterprise server name (assumes https on port 443) start with http:// or https://
 
 -Dport - Gradle Enterprise server port. Defaults to 443
 
