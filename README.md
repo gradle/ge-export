@@ -34,4 +34,4 @@ To run this sample:
 
 - Copy ../ge-export/src/main/resources/POSTGRES.properties.template to POSTGRES.properties in same dir and fill in DB info.
 
-- Run `./gradlew run -Dserver=your_server_name -Dhours=24 -DcreateDb` from the command line.
+- Run `./gradlew run -Dserver=https://your_server_name -Dhours=24 -DcreateDb` from the command line.
