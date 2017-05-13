@@ -14,9 +14,9 @@ select b.build_id, b.start from builds b, tasks t where b.build_id = t.build_id 
 
 ## Parameters:
 
--Dserver - Gradle Enterprise server name (assumes https on port 443) start with http:// or https://
+-Dserver - Gradle Enterprise server name. Start with http:// or https://
 
--Dport - Gradle Enterprise server port. Defaults to 443
+-Dport - Gradle Enterprise server port. Defaults to 80 for http and 443 for https.
 
 -Dhours - how many hours to go back from now. Default is 24hours. Use 'all' for all builds scans in the system (Warning: maybe be slow)
 
