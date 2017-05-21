@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import static com.gradle.exportapi.dao.BuildDAO.findLastBuildId;
 import static java.time.Instant.now;
 
+
 /* @Author Russel Hart rus@gradle.com */
 
 final class Application {
@@ -44,23 +45,14 @@ final class Application {
 
     //TODO refactor to 'clean code'
     private static HttpClient<ByteBuf, ByteBuf> createHttpClient() {
-        String server = System.getProperty("server", "localhost");
-        String port = System.getProperty("port");
-        boolean isSSL = true;
-        if(server.startsWith("http://")) {
-            server = server.substring("http://".length());
-            isSSL = false;
-            if(port == null) port = "80";
-        } else if (server.startsWith("https://")) {
-            server = server.substring("https://".length());
-            if(port == null) port = "443";
-        }
-        if(port == null) port = "443";
-
-        final InetSocketAddress socketAddress = new InetSocketAddress(
-                server, Integer.parseInt( port ) );
-
-        final HttpClient<ByteBuf, ByteBuf> httpClient = HttpClient.newClient(socketAddress);
+        final String server = System.getProperty("server", "localhost");
+        final String givenPort = System.getProperty("port");
+        final String protocol = server.substring(0,server.indexOf('/',5) + 1);
+//        Add one to the index of / to grab the second /. Start indexOf at 5 because the first / MUST be at least at index 5 because http: has 5 characters.
+        final String port = setPort(givenPort, protocol);
+        final boolean isSSL = setSSL(protocol);
+        final HttpClient<ByteBuf, ByteBuf> httpClient = HttpClient.newClient(new InetSocketAddress(
+                server.substring(protocol.length()), Integer.parseInt(port)));
 
         if(isSSL) {
             return httpClient.unsafeSecure();
@@ -109,6 +101,32 @@ final class Application {
         } catch (Exception e) {
             log.error("Export failed ", e);
         }
+    }
+
+    private static String setPort(String givenPort, String protocol) {
+        if (givenPort != null) {
+            return givenPort;
+        } if (protocol == null) {
+            return "443";
+        } else if (protocol.equals("http")) {
+            return "80";
+        } else if (protocol.equals("https")) {
+            return "443";
+        }
+        return "Error";
+//        Should crash if there is not a valid protocol (for example httpps)?
+//        TODO: Ask if program should throw an exception here
+    }
+
+    private static boolean setSSL(String protocol) {
+        if (protocol.equals("http://")) {
+            return false;
+        }
+        else if (protocol.equals("https://")) {
+            return true;
+        }
+        return true;
+//        Return true because we default to https
     }
 
     private static Observable<String> buildIdStream(Instant since) {
