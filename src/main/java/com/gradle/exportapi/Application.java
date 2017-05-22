@@ -34,32 +34,10 @@ final class Application {
 
     private static final String BASIC_AUTH = System.getProperty("basic_auth");
 
-    private static final InetSocketAddress GRADLE_ENTERPRISE_SERVER = new InetSocketAddress(
-            System.getProperty("server"), Integer.parseInt( System.getProperty("port","443")) );
-
-    private static final HttpClient<ByteBuf, ByteBuf> HTTP_CLIENT = createHttpClient();
+    private static final HttpClient<ByteBuf, ByteBuf> HTTP_CLIENT = HttpClientFactory.create(System.getProperty("server"), System.getProperty("port"));
 
     private static final Integer NUM_OF_STREAMS = Integer.valueOf(System.getProperty("num_of_streams","5"));
     private static final ObjectMapper MAPPER = new ObjectMapper();
-
-
-    //TODO refactor to 'clean code'
-    private static HttpClient<ByteBuf, ByteBuf> createHttpClient() {
-        final String server = System.getProperty("server", "localhost");
-        final String givenPort = System.getProperty("port");
-        final String protocol = server.substring(0,server.indexOf('/',5) + 1);
-//        Add one to the index of / to grab the second /. Start indexOf at 5 because the first / MUST be at least at index 5 because http: has 5 characters.
-        final String port = setPort(givenPort, protocol);
-        final boolean isSSL = setSSL(protocol);
-        final HttpClient<ByteBuf, ByteBuf> httpClient = HttpClient.newClient(new InetSocketAddress(
-                server.substring(protocol.length()), Integer.parseInt(port)));
-
-        if(isSSL) {
-            return httpClient.unsafeSecure();
-        } else {
-            return httpClient;
-        }
-    }
 
     public static void main(String[] args) throws Exception {
         try {
@@ -101,32 +79,6 @@ final class Application {
         } catch (Exception e) {
             log.error("Export failed ", e);
         }
-    }
-
-    private static String setPort(String givenPort, String protocol) {
-        if (givenPort != null) {
-            return givenPort;
-        } if (protocol == null) {
-            return "443";
-        } else if (protocol.equals("http")) {
-            return "80";
-        } else if (protocol.equals("https")) {
-            return "443";
-        }
-        return "Error";
-//        Should crash if there is not a valid protocol (for example httpps)?
-//        TODO: Ask if program should throw an exception here
-    }
-
-    private static boolean setSSL(String protocol) {
-        if (protocol.equals("http://")) {
-            return false;
-        }
-        else if (protocol.equals("https://")) {
-            return true;
-        }
-        return true;
-//        Return true because we default to https
     }
 
     private static Observable<String> buildIdStream(Instant since) {
