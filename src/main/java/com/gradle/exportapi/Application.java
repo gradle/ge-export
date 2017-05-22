@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import static com.gradle.exportapi.dao.BuildDAO.findLastBuildId;
 import static java.time.Instant.now;
 
+
 /* @Author Russel Hart rus@gradle.com */
 
 final class Application {
@@ -33,41 +34,10 @@ final class Application {
 
     private static final String BASIC_AUTH = System.getProperty("basic_auth");
 
-    private static final InetSocketAddress GRADLE_ENTERPRISE_SERVER = new InetSocketAddress(
-            System.getProperty("server"), Integer.parseInt( System.getProperty("port","443")) );
-
-    private static final HttpClient<ByteBuf, ByteBuf> HTTP_CLIENT = createHttpClient();
+    private static final HttpClient<ByteBuf, ByteBuf> HTTP_CLIENT = HttpClientFactory.create(System.getProperty("server"), System.getProperty("port"));
 
     private static final Integer NUM_OF_STREAMS = Integer.valueOf(System.getProperty("num_of_streams","5"));
     private static final ObjectMapper MAPPER = new ObjectMapper();
-
-
-    //TODO refactor to 'clean code'
-    private static HttpClient<ByteBuf, ByteBuf> createHttpClient() {
-        String server = System.getProperty("server", "localhost");
-        String port = System.getProperty("port");
-        boolean isSSL = true;
-        if(server.startsWith("http://")) {
-            server = server.substring("http://".length());
-            isSSL = false;
-            if(port == null) port = "80";
-        } else if (server.startsWith("https://")) {
-            server = server.substring("https://".length());
-            if(port == null) port = "443";
-        }
-        if(port == null) port = "443";
-
-        final InetSocketAddress socketAddress = new InetSocketAddress(
-                server, Integer.parseInt( port ) );
-
-        final HttpClient<ByteBuf, ByteBuf> httpClient = HttpClient.newClient(socketAddress);
-
-        if(isSSL) {
-            return httpClient.unsafeSecure();
-        } else {
-            return httpClient;
-        }
-    }
 
     public static void main(String[] args) throws Exception {
         try {

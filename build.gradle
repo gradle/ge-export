@@ -2,6 +2,7 @@ plugins {
     id 'com.gradle.build-scan' version '1.6'
     id 'java'
     id 'application'
+    id 'idea'
 }
 
 repositories {
@@ -21,7 +22,7 @@ dependencies {
     compile 'ch.qos.logback:logback-classic:1.2.3'
 
     // Use TestNG framework, also requires calling test.useTestNG() below
-    testCompile 'org.testng:testng:6.10'
+    testCompile 'junit:junit:4.12'
 }
 
 mainClassName = 'com.gradle.exportapi.Application'
@@ -31,4 +32,3 @@ run {
     systemProperties System.getProperties()
 }
 
-test.useTestNG()
