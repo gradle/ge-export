@@ -9,14 +9,17 @@ import java.net.URL;
  * Created by grodion on 5/21/17.
  */
 public class HttpClientFactory {
-    public static HttpClient<ByteBuf, ByteBuf> create(String server, String portStr) {
+
+    private static String defaultToHttps(final String server) {
+        return server.startsWith("http") ? server : "https://" + server;
+    }
+
+    public static HttpClient<ByteBuf, ByteBuf> create(String server, final String portStr) {
         int port = 0;
-        if (!server.startsWith("http")) {
-            server = "https://" + server;
-        }
+
         try {
 
-            URL url = new URL(server);
+            URL url = new URL(defaultToHttps(server));
             if (portStr == null) {
                 port = url.getDefaultPort();
             } else if (Integer.parseInt(portStr) > 0){
