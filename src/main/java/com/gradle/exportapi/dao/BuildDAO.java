@@ -20,7 +20,7 @@ public class BuildDAO {
                 (build.getTimer().getStartTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
 
         OffsetDateTime finish = OffsetDateTime.ofInstant
-                (build.getTimer().getStartTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
+                (build.getTimer().getFinishTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
 
         Object[] params = new Object[] {
                 build.getBuildId(),
