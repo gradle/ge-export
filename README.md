@@ -32,6 +32,8 @@ To run this sample:
 
 - Open a terminal window.
 
-- Copy ../ge-export/src/main/resources/POSTGRES.properties.template to POSTGRES.properties in same dir and fill in DB info.
+- Copy Copy POSTGRES.properties.template to POSTGRES.properties in same directory 
+(i.e. src/main/resources/POSTGRES.properties) and fill in the information for the target PostgreSQL database that data will 
+be exported to.
 
 - Run `./gradlew run -Dserver=https://your_server_name -Dhours=24 -DcreateDb` from the command line.

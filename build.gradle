@@ -22,7 +22,19 @@ dependencies {
 
 mainClassName = 'com.gradle.exportapi.Application'
 
+task validateDbConfig {
+    description 'Ensure that the target database properties file exists'
+    group 'Verification'
+
+    ext.dbConfig = file('src/main/resources/POSTGRES.properties')
+    doLast {
+        assert configuration.exists() : "Please define target database information in $dbConfig"
+    }
+}
+
 run {
+    dependsOn validateDbConfig
+
     /* Pass all the properties to the application java process*/
     systemProperties System.getProperties()
 }

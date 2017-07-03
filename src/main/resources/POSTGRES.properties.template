@@ -1,3 +1,5 @@
+# Make a copy of this file, in this directory, called 'POSTGRES.properties'
+# Fill in values for the below properties with your Postgres DB info
 jdbcUrl=jdbc:postgresql://localhost:5432/postgres
 username=
 password=
