@@ -28,7 +28,7 @@ task validateDbConfig {
 
     ext.dbConfig = file('src/main/resources/POSTGRES.properties')
     doLast {
-        assert configuration.exists() : "Please define target database information in $dbConfig"
+        assert dbConfig.exists() : "Please define target database information in $dbConfig"
     }
 }
 
