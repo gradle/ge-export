@@ -1,16 +1,16 @@
 package com.gradle.exportapi;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.gradle.exportapi.dao.BuildDAO;
 import com.gradle.exportapi.dao.CustomValueDAO;
+import com.gradle.exportapi.dao.TasksDAO;
 import com.gradle.exportapi.dao.TestsDAO;
 import com.gradle.exportapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.gradle.exportapi.dao.TasksDAO;
 
 import java.time.Instant;
-
-import static com.gradle.exportapi.dao.BuildDAO.*;
+import java.util.Optional;
 
 
 class EventProcessor {
@@ -218,10 +218,16 @@ data: {"timestamp":1491615409161,"type":{"majorVersion":1,"minorVersion":0,"even
         Build currentBuild = processor.currentBuild;
         currentBuild.resolveStatus();
 
-        currentBuild.setId( insertBuild(currentBuild) );
+        Optional<Long> buildTableId = BuildDAO.getBuildTableId(currentBuild);
+        if (buildTableId.isPresent()) {
+            log.warn("Skipped build {} that is already in db", currentBuild.getBuildId());
+            return;
+        }
+        currentBuild.setId(BuildDAO.insertBuild(currentBuild));
 
-        currentBuild.taskMap.values().stream().forEach( TasksDAO::insertTask );
-        currentBuild.testMap.values().stream().forEach( TestsDAO::insertTest );
+
+        currentBuild.taskMap.values().stream().forEach(TasksDAO::insertTask);
+        currentBuild.testMap.values().stream().forEach(TestsDAO::insertTest);
         currentBuild.customValues.stream().forEach(CustomValueDAO::insertCustomValue);
     }
 

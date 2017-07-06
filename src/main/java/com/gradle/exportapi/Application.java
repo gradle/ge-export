@@ -141,7 +141,7 @@ final class Application {
         return request
                 .flatMap(HttpClientResponse::getContentAsServerSentEvents)
                 .doOnNext(serverSentEvent -> _lastBuildEventId.set(serverSentEvent.getEventIdAsString()))
-                .doOnSubscribe(() -> log.info("Streaming events for : " + buildId))
+                .doOnSubscribe(() -> log.info("Streaming events for build: " + buildId))
                 .filter(serverSentEvent -> serverSentEvent.getEventTypeAsString().equals("BuildEvent"))
                 .map(Application::parse)
                 .onErrorResumeNext(t -> {

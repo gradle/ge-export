@@ -37,5 +37,10 @@ run {
 
     /* Pass all the properties to the application java process*/
     systemProperties System.getProperties()
+
+    if (System.getProperty('debug') != null) {
+        jvmArgs '-Xdebug',
+                '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006'
+    }
 }
 
