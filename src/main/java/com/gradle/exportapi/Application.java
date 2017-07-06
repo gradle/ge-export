@@ -3,89 +3,157 @@ package com.gradle.exportapi;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpStatusClass;
+import io.netty.util.ResourceLeakDetector;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientRequest;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import io.reactivex.netty.protocol.http.sse.ServerSentEvent;
 import org.knowm.yank.PropertiesUtils;
 import org.knowm.yank.Yank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.exceptions.Exceptions;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
+import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static com.gradle.exportapi.dao.BuildDAO.findLastBuildId;
 import static java.time.Instant.now;
 
-
-/* @Author Russel Hart rus@gradle.com */
-
 final class Application {
 
-    public static final Logger log = LoggerFactory.getLogger(Application.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
     private static final String BASIC_AUTH = System.getProperty("basic_auth");
 
-    private static final HttpClient<ByteBuf, ByteBuf> HTTP_CLIENT = HttpClientFactory.create(System.getProperty("server"), System.getProperty("port"));
+    private static final HttpClient<ByteBuf, ByteBuf> HTTP_CLIENT;
 
-    private static final Integer NUM_OF_STREAMS = Integer.valueOf(System.getProperty("num_of_streams","5"));
+    static {
+        String server = System.getProperty("server");
+        String port = System.getProperty("port");
+        if (server == null) {
+            throw new IllegalArgumentException("'server' is a required system property");
+        }
+        HTTP_CLIENT = HttpClientFactory.create(server, port);
+    }
+
+
+    private static final Integer NUM_OF_STREAMS = Integer.valueOf(System.getProperty("num_of_streams", "5"));
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public static void main(String[] args) throws Exception {
-        try {
-            Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
-            Yank.setupDefaultConnectionPool(dbProps);
+        //ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
 
-            if( System.getProperty("createDb") != null) {
+        try {
+
+            LOGGER.info("Validating connection to the target database");
+            Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
+            try {
+                Yank.setupDefaultConnectionPool(dbProps);
+            } catch (Throwable t) {
+                LOGGER.error("Unable to connect to the target database.  Please validate your configuration settings.");
+                throw new RuntimeException("Failed to establish connection to target database.", t);
+            }
+
+            LOGGER.info("Validating connection to Gradle Enterprise");
+            // This ignores authentication
+            performHealthCheck();
+            // This does NOT ignore authentication
+            performAuthenticationCheck();
+
+            if (System.getProperty("createDb") != null) {
                 CreateDB.run();
             }
 
-            String hoursStr = System.getProperty("hours");
-
+            String hoursStr = System.getProperty("hours", "24");
             Instant since;
-            // default to 24hs
-            if(hoursStr == null) {
-                since = now().minus(Duration.ofHours( Integer.parseInt("24")));
-            }
-            else if(hoursStr.equals("all")) {
+            if (hoursStr.equals("all")) {
                 since = Instant.EPOCH;
-                log.info("Calculating for all stored build scans");
+                LOGGER.info("Calculating for all stored build scans");
             } else {
-                since = now().minus(Duration.ofHours( Integer.parseInt(hoursStr)));
+                since = now().minus(Duration.ofHours(Integer.parseInt(hoursStr)));
             }
 
             buildIdStream(since)
-                .flatMap(buildId -> buildEventStream(buildId)
-                    .reduce(new EventProcessor(buildId), (eventProcessor, json) -> {
-                        eventProcessor.process(json);
-                        return eventProcessor;
-                    }),
-                    NUM_OF_STREAMS
-                )
-                .toBlocking()
-                .subscribe(
-                    EventProcessor::persist
-                );
+                    .flatMap(buildId -> buildEventStream(buildId)
+                                    .reduce(new EventProcessor(buildId), (eventProcessor, json) -> {
+                                        eventProcessor.process(json);
+                                        return eventProcessor;
+                                    }),
+                            NUM_OF_STREAMS
+                    )
+                    .toBlocking()
+                    .subscribe(
+                            EventProcessor::persist
+                    );
 
             Yank.releaseDefaultConnectionPool();
         } catch (Exception e) {
-            log.error("Export failed ", e);
+            LOGGER.error("Export failed ", e);
+            System.exit(1);
         }
+    }
+
+    public final static String BUILDS_SINCE_RESOURCE = "/build-export/v1/builds/since/";
+
+
+
+    /**
+     * Creates a get and adds authentication if needed
+     *
+     * @param resourcePath
+     * @return
+     */
+    private static HttpClientRequest<ByteBuf, ByteBuf> get(String resourcePath) {
+        HttpClientRequest<ByteBuf, ByteBuf> request = HTTP_CLIENT.createGet(resourcePath);
+        if (BASIC_AUTH != null) {
+            request = request.addHeader("Authorization", "Basic " + BASIC_AUTH);
+        }
+        return request;
+    }
+
+    private static void performHealthCheck() {
+        get("/info/health")
+                .doOnNext(response -> {
+                    LOGGER.info("Received a status code of {} from '/info/health'", response.getStatus());
+                    if (!response.getStatus().equals(HttpResponseStatus.OK)) {
+                        throw new RuntimeException("HealthCheck failed.  Status: " + response.getStatus());
+                    }
+                }).flatMap(response ->
+                response.getContent()
+                        .map(bb -> bb.toString(Charset.defaultCharset())))
+                .toBlocking()
+                .forEach(LOGGER::info);
+    }
+
+    private static void performAuthenticationCheck() {
+        long timeStamp = System.currentTimeMillis();
+        get(BUILDS_SINCE_RESOURCE + timeStamp)
+                .doOnNext(response -> {
+                    //expected response is 204 due no builds being there
+                    LOGGER.info("Received a status code of {} from: " + BUILDS_SINCE_RESOURCE + timeStamp, response.getStatus());
+                    if (!response.getStatus().codeClass().equals(HttpStatusClass.SUCCESS)) {
+                        throw new RuntimeException("AuthenticationCheck failed.  Status: " + response.getStatus());
+                    }
+                }).flatMap(response ->
+                response.getContent()
+                        .map(bb -> bb.toString(Charset.defaultCharset())))
+                .toBlocking()
+                .forEach(LOGGER::info);
     }
 
     private static Observable<String> buildIdStream(Instant since) {
 
         String lastBuildEventId = findLastBuildId();
 
-        log.info("lastBuildEventId: " + lastBuildEventId);
+        LOGGER.info("lastBuildEventId: " + lastBuildEventId);
 
         return buildStream(since, lastBuildEventId)
                 .map(Application::parse)
@@ -97,12 +165,12 @@ final class Application {
         AtomicReference<String> _lastBuildId = new AtomicReference<>(null);
 
         final String buildsSinceUri = "/build-export/v1/builds/since/" + String.valueOf(since.toEpochMilli());
-        log.info("Builds uri: " + buildsSinceUri);
+        LOGGER.info("Builds uri: " + buildsSinceUri);
 
         HttpClientRequest<ByteBuf, ByteBuf> request = HTTP_CLIENT
                 .createGet(buildsSinceUri)
                 .setKeepAlive(true);
-        if(BASIC_AUTH != null) {
+        if (BASIC_AUTH != null) {
             request = request.addHeader("Authorization", "Basic " + BASIC_AUTH);
         }
 
@@ -113,9 +181,9 @@ final class Application {
         return request
                 .flatMap(HttpClientResponse::getContentAsServerSentEvents)
                 .doOnNext(serverSentEvent -> _lastBuildId.set(serverSentEvent.getEventIdAsString()))
-                .doOnSubscribe(() -> log.info("Streaming builds..."))
+                .doOnSubscribe(() -> LOGGER.info("Streaming builds..."))
                 .onErrorResumeNext(t -> {
-                    log.info("Error streaming builds, resuming from build id: " + _lastBuildId.get());
+                    LOGGER.info("Error streaming builds, resuming from build id: " + _lastBuildId.get());
                     return buildStream(since, _lastBuildId.get());
                 });
     }
@@ -130,7 +198,7 @@ final class Application {
         HttpClientRequest<ByteBuf, ByteBuf> request = HTTP_CLIENT
                 .createGet("/build-export/v1/build/" + buildId + "/events?eventTypes=" + EventProcessor.EVENT_TYPES)
                 .setKeepAlive(true);
-        if(BASIC_AUTH != null) {
+        if (BASIC_AUTH != null) {
             request = request.addHeader("Authorization", "Basic " + BASIC_AUTH);
         }
 
@@ -141,11 +209,11 @@ final class Application {
         return request
                 .flatMap(HttpClientResponse::getContentAsServerSentEvents)
                 .doOnNext(serverSentEvent -> _lastBuildEventId.set(serverSentEvent.getEventIdAsString()))
-                .doOnSubscribe(() -> log.info("Streaming events for build: " + buildId))
+                .doOnSubscribe(() -> LOGGER.info("Streaming events for build: " + buildId))
                 .filter(serverSentEvent -> serverSentEvent.getEventTypeAsString().equals("BuildEvent"))
                 .map(Application::parse)
                 .onErrorResumeNext(t -> {
-                    log.info("Error streaming build events of build " + buildId + ", resuming from event id" + _lastBuildEventId.get() + "...");
+                    LOGGER.info("Error streaming build events of build " + buildId + ", resuming from event id" + _lastBuildEventId.get() + "...");
                     return buildEventStream(buildId, _lastBuildEventId.get());
                 });
     }
