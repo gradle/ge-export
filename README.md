@@ -9,7 +9,13 @@ The Gradle Enterprise Export API (https://docs.gradle.com/enterprise/export-api)
 ## Example Queries
 
 ```SQL
-select b.build_id, b.start from builds b, tasks t where b.build_id = t.build_id and path = ':test' and duration_millis > 1000;
+SELECT b.build_id, 
+       b.start 
+FROM   builds b, 
+       tasks t 
+WHERE  b.build_id = t.build_id 
+       AND path = ':test' 
+       AND duration_millis > 1000; 
 ```
 
 # Running from Gradle
