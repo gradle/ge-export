@@ -23,4 +23,6 @@ exportToHTML/
 tasks.csv
 
 src/main/resources/POSTGRES.properties
+src/main/resources/db-info.properties
+src/main/resources/test-db-info.properties
 gradle.properties

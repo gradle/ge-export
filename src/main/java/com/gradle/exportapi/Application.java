@@ -2,6 +2,7 @@ package com.gradle.exportapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gradle.exportapi.dbutil.SqlHelper;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpStatusClass;
@@ -49,7 +50,7 @@ final class Application {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public static void main(String[] args) throws Exception {
-        //ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
+        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
 
         try {
 
@@ -57,6 +58,7 @@ final class Application {
             Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
             try {
                 Yank.setupDefaultConnectionPool(dbProps);
+                SqlHelper.loadSqlQueries();
             } catch (Throwable t) {
                 LOGGER.error("Unable to connect to the target database.  Please validate your configuration settings.");
                 throw new RuntimeException("Failed to establish connection to target database.", t);
@@ -83,10 +85,7 @@ final class Application {
 
             buildIdStream(since)
                     .flatMap(buildId -> buildEventStream(buildId)
-                                    .reduce(new EventProcessor(buildId), (eventProcessor, json) -> {
-                                        eventProcessor.process(json);
-                                        return eventProcessor;
-                                    }),
+                                    .reduce(new EventProcessor(buildId), EventProcessor::process),
                             NUM_OF_STREAMS
                     )
                     .toBlocking()
@@ -104,12 +103,11 @@ final class Application {
     public final static String BUILDS_SINCE_RESOURCE = "/build-export/v1/builds/since/";
 
 
-
     /**
      * Creates a get and adds authentication if needed
      *
-     * @param resourcePath
-     * @return
+     * @param resourcePath the end point to hit
+     * @return an {@link HttpClientRequest} with auth headers (if needed)
      */
     private static HttpClientRequest<ByteBuf, ByteBuf> get(String resourcePath) {
         HttpClientRequest<ByteBuf, ByteBuf> request = HTTP_CLIENT.createGet(resourcePath);
@@ -188,11 +186,11 @@ final class Application {
                 });
     }
 
-    private static Observable<JsonNode> buildEventStream(String buildId) {
+    protected static Observable<JsonNode> buildEventStream(String buildId) {
         return buildEventStream(buildId, null);
     }
 
-    private static Observable<JsonNode> buildEventStream(String buildId, String lastEventId) {
+    protected static Observable<JsonNode> buildEventStream(String buildId, String lastEventId) {
         AtomicReference<String> _lastBuildEventId = new AtomicReference<>(null);
 
         HttpClientRequest<ByteBuf, ByteBuf> request = HTTP_CLIENT

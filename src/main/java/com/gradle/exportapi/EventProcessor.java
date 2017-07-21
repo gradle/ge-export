@@ -29,7 +29,7 @@ class EventProcessor {
         log.debug("DB-generated id: " + currentBuild.getId());
     }
 
-    public void process(JsonNode json) {
+    public EventProcessor process(JsonNode json) {
         String eventType = json.get("type").get("eventType").asText();
 
         switch (eventType) {
@@ -67,6 +67,7 @@ class EventProcessor {
                 customValue(json);
                 break;
         }
+        return this;
     }
 
 

@@ -1,22 +1,21 @@
 package com.gradle.exportapi.dao;
 
 import com.gradle.exportapi.model.Task;
-import static com.gradle.exportapi.dbutil.SQLHelper.*;
+import static com.gradle.exportapi.dbutil.SqlHelper.*;
 import org.knowm.yank.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TasksDAO {
 
-    static final Logger log = LoggerFactory.getLogger(TasksDAO.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(TasksDAO.class);
 
     public static long insertTask(Task task) {
-        // If the task executor crashed, checking its duration may result in an NPE
         long duration = 0;
         try {
             duration = task.getTimer().durationInMillis();
         } catch (Exception e) {
-            log.warn("Failed to get duration of task " + task.getPath() + " for build " + task.getBuildId(), e);
+            LOGGER.warn("Failed to get task duration.  It's possible the task executor crashed. Path:" + task.getPath() + " Build: " + task.getBuildId(), e);
         }
 
         Object[] params = new Object[] {
@@ -27,9 +26,8 @@ public class TasksDAO {
                 duration,
                 task.getOutcome()};
 
-        String SQL = insert("tasks (build_id, task_id, path, type, duration_millis, outcome)", params);
-        long newId = Yank.insert(SQL, params);
-        log.debug("Created task id: " + newId + " task: " + task.getPath() + " for build: " + task.getBuildId());
+        long newId = Yank.insertSQLKey("INSERT_TASK", params);
+        LOGGER.debug("Inserted task {} for build {}", task.getPath(), task.getBuildId());
         return newId;
     }
 }

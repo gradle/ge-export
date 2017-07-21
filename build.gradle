@@ -2,6 +2,11 @@ plugins {
     id 'java'
     id 'application'
     id 'idea'
+    id 'org.unbroken-dome.test-sets' version '1.4.2'
+}
+
+testSets {
+    integrationTest { dirName = 'integration-test' }
 }
 
 repositories {

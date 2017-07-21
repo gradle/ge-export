@@ -9,7 +9,7 @@ public class Build {
 
     private long id;
 
-    @Column("BUILD_ID")
+    @Column("build_id")
     private String buildId;
 
     private String userName;
@@ -47,6 +47,8 @@ public class Build {
     public String getBuildId() {
         return buildId;
     }
+
+    public void setBuildId(String buildId) { this.buildId = buildId; }
 
     public String getUserName() {
         return userName;

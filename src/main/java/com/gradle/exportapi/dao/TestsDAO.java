@@ -5,21 +5,17 @@ import org.knowm.yank.Yank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.gradle.exportapi.dbutil.SQLHelper.insert;
-
 public class TestsDAO {
 
-    static final Logger log = LoggerFactory.getLogger(TestsDAO.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(TestsDAO.class);
 
     public static long insertTest(Test test) {
-
-        if(test.getStatus() == null) {
-            log.warn("Test " + test.getName() + " for build " + test.getBuildId() + " has no value for status, " +
-                     "recording its status as 'error'");
+        if (test.getStatus() == null) {
+            LOGGER.warn("Test {} for build {} has no status.  Setting the status to error.", test.getName(), test.getBuildId());
             test.setStatus("error");
         }
 
-        Object[] params = new Object[] {
+        Object[] params = new Object[]{
                 test.getBuildId(),
                 test.getTaskId(),
                 test.getTestId(),
@@ -29,9 +25,8 @@ public class TestsDAO {
                 test.durationInMillis()
         };
 
-        String SQL = insert("tests (build_id, task_id, test_id, name, class_name, status, duration_millis)", params);
-        long newId = Yank.insert(SQL, params);
-        log.debug("Created test id: " + newId + " test: " + test.getName() + " for build: " + test.getBuildId());
+        long newId = Yank.insertSQLKey("INSERT_TEST", params);
+        LOGGER.debug("Inserted test {} for build {}", test.getName(), test.getBuildId());
         return newId;
     }
 }

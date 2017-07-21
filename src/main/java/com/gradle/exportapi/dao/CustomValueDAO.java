@@ -6,24 +6,19 @@ import org.knowm.yank.Yank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.gradle.exportapi.dbutil.SQLHelper.insert;
-
 public class CustomValueDAO {
 
-    static final Logger log = LoggerFactory.getLogger(CustomValueDAO.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(CustomValueDAO.class);
 
     public static long insertCustomValue(CustomValue cv) {
-
         Object[] params = new Object[]{
                 cv.getBuildId(),
                 cv.getKey(),
                 cv.getValue(),
         };
 
-        String SQL = insert("custom_values (build_id, key, value)", params);
-
-        long newId = Yank.insert(SQL, params);
-        log.debug("Created custom value id: " + newId + " key: " + cv.getKey() + " for build: " + cv.getBuildId());
+        long newId = Yank.insertSQLKey("INSERT_CUSTOM_VALUE", params);
+        LOGGER.debug("Inserted custom value with key {} for build {}", cv.getKey(), cv.getBuildId());
         return newId;
     }
 }
