@@ -8,14 +8,16 @@ The Gradle Enterprise Export API (https://docs.gradle.com/enterprise/export-api)
 
 ## Example Queries
 
+```SQL
 select b.build_id, b.start from builds b, tasks t where b.build_id = t.build_id and path = ':test' and duration_millis > 1000;
+```
 
 # Running from Gradle
 
-To run this sample:
+To run ge-export:
 
 * Open a terminal window.
-* Copy `./src/main/resources/db-info.properties.template` to `src/main/resources/db-info.properties`
+* Copy `./src/main/resources/db-info.properties.template` to `./src/main/resources/db-info.properties`
     * Open the new `db-info.properties` file and fill in the target database information
 * Copy `./sample.gradle.properties` to `./gradle.properties`
     * Open `gradle.properties` file and fill out the configuration
