@@ -1,0 +1,21 @@
+##################################
+# Make a copy of this file, in this directory, called 'db-info.properties'
+# Fill in values for the below properties for the target database that Gradle Enterprise events
+# will be exported to.  This is NOT the database information for Gradle Enterprise.
+#
+# Supported database systems
+# PostgreSQL
+# Give the fully qualified connection string to the database
+# jdbcUrl=jdbc:postgresql://localhost:5432/postgres
+#
+# MySQL
+# The database must be created in MySQL before running
+# jdbcUrl=jdbc:mysql://localhost:3306/geexport
+#
+# Pull requests are welcome if you'd like to add support for more target databases.
+###################################
+
+jdbcUrl=
+username=
+password=
+maximumPoolSize=5

@@ -18,10 +18,13 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.2'
     compile 'com.opencsv:opencsv:3.9'
     compile 'org.knowm:yank:3.3.0'
-    compile 'org.postgresql:postgresql:42.0.0'
     compile 'ch.qos.logback:logback-classic:1.2.3'
 
-    // Use TestNG framework, also requires calling test.useTestNG() below
+    //TODO: Find a better strategy than having EVERYTHING on the path
+    //TODO: Make sure times are stored in UTC :-/ for MySql and the connection is consistent
+    runtime 'org.postgresql:postgresql:42.0.0'
+    runtime 'mysql:mysql-connector-java:6.0.6'
+
     testCompile 'junit:junit:4.12'
 }
 
@@ -42,7 +45,8 @@ task validateDbConfig {
     description 'Ensure that the target database properties file exists'
     group 'Verification'
 
-    ext.dbConfig = file('src/main/resources/POSTGRES.properties')
+    def fileName = System.getProperty("geexport.db.info", "db-info.properties")
+    ext.dbConfig = file("src/main/resources/${fileName}")
     doLast {
         assert dbConfig.exists() : "Please define target database information in $dbConfig"
     }

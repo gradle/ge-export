@@ -31,11 +31,10 @@ import static java.time.Instant.now;
 final class Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
-
     private static final String BASIC_AUTH = System.getProperty("basic_auth");
-
     private static final HttpClient<ByteBuf, ByteBuf> HTTP_CLIENT;
-
+    private static final Integer NUM_OF_STREAMS = Integer.valueOf(System.getProperty("num_of_streams", "5"));
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     static {
         String server = System.getProperty("server");
         String port = System.getProperty("port");
@@ -45,17 +44,16 @@ final class Application {
         HTTP_CLIENT = HttpClientFactory.create(server, port);
     }
 
-
-    private static final Integer NUM_OF_STREAMS = Integer.valueOf(System.getProperty("num_of_streams", "5"));
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    public static final String GE_EXPORT_DATABASE_PROPERTIES_KEY = "geexport.db.info";
 
     public static void main(String[] args) throws Exception {
-        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
+        //ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
 
         try {
 
-            LOGGER.info("Validating connection to the target database");
-            Properties dbProps = PropertiesUtils.getPropertiesFromClasspath("POSTGRES.properties");
+            String propertiesFile = System.getProperty(GE_EXPORT_DATABASE_PROPERTIES_KEY, "db-info.properties");
+            LOGGER.info("Validating connection to the target database from configuration file: {}", propertiesFile);
+            Properties dbProps = PropertiesUtils.getPropertiesFromClasspath(propertiesFile);
             try {
                 Yank.setupDefaultConnectionPool(dbProps);
                 SqlHelper.loadSqlQueries();

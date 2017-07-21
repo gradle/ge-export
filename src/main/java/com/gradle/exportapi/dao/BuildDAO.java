@@ -6,13 +6,16 @@ import org.knowm.yank.Yank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 public class BuildDAO {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BuildDAO.class);
+
     static {
         SqlHelper.loadSqlQueries();
     }
@@ -21,8 +24,15 @@ public class BuildDAO {
     public static long insertBuild(Build build) {
         LOGGER.debug("Inserting build {} into the database.", build.getBuildId());
 
-        OffsetDateTime start = OffsetDateTime.ofInstant(build.getTimer().getStartTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
-        OffsetDateTime finish = OffsetDateTime.ofInstant(build.getTimer().getFinishTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
+        Object start;
+        Object finish;
+        if (SqlHelper.isMySql()) {
+            start = LocalDateTime.ofInstant(build.getTimer().getStartTime(), ZoneOffset.UTC);
+            finish = LocalDateTime.ofInstant(build.getTimer().getFinishTime(), ZoneOffset.UTC);
+        } else {
+            start = OffsetDateTime.ofInstant(build.getTimer().getStartTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
+            finish = OffsetDateTime.ofInstant(build.getTimer().getFinishTime(), ZoneId.of(build.getTimer().getTimeZoneId()));
+        }
 
         Object[] params = new Object[]{
                 build.getBuildId(),
